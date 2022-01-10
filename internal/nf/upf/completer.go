@@ -6,6 +6,7 @@ import (
 	"github.com/c-bata/go-prompt"
 	"github.com/muthuramanecs03g/nfcli/internal/nf/upf/upfcontrol"
 	"github.com/muthuramanecs03g/nfcli/internal/nf/upf/upfdata"
+	"github.com/muthuramanecs03g/nfcli/lib"
 )
 
 var UpfSuggestion = []prompt.Suggest{
@@ -14,19 +15,19 @@ var UpfSuggestion = []prompt.Suggest{
 	{Text: "exit", Description: "Exit the UPF module"},
 }
 
-func CompleterUPF(in prompt.Document) []prompt.Suggest {
+func CompleterUPF(in prompt.Document, promptConfig *lib.Prompt) []prompt.Suggest {
 	a := in.TextBeforeCursor()
 	var split = strings.Split(a, " ")
 	w := in.GetWordBeforeCursor()
 	if len(split) > 1 {
 		var v = split[0]
 		if v == "control" {
-			return upfcontrol.CompleterControl(in)
+			return upfcontrol.CompleterControl(in, promptConfig)
 		}
 		if v == "data" {
-			return upfdata.CompleterData(in)
+			return upfdata.CompleterData(in, promptConfig)
 		}
-		return prompt.FilterHasPrefix(UpfSuggestion, v, true)
 	}
-	return prompt.FilterHasPrefix(UpfSuggestion, w, true)
+
+	return prompt.FilterHasPrefix(*promptConfig.Suggestion, w, true)
 }

@@ -2,8 +2,8 @@ package nfcli
 
 import (
 	"github.com/c-bata/go-prompt"
-	"github.com/muthuramanecs03g/nfcli/internal/nf"
 	"github.com/muthuramanecs03g/nfcli/internal/nf/upf"
+	"github.com/muthuramanecs03g/nfcli/lib"
 )
 
 const (
@@ -23,8 +23,10 @@ var MainSuggestion = []prompt.Suggest{
 
 // Completer is responsible for the autocompletion of the CLI
 func Completer(in prompt.Document) []prompt.Suggest {
-	if PromptConfig.IsModule && PromptConfig.Module == nf.NF_UPF {
-		return upf.CompleterUPF(in)
+	if PromptConfig.IsNf {
+		if PromptConfig.Nf == lib.NF_UPF {
+			return upf.CompleterUPF(in, PromptConfig)
+		}
 	}
 
 	w := in.TextBeforeCursor()

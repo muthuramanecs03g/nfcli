@@ -7,7 +7,7 @@ type Prompt struct {
 	Prefix     string
 	IsEnable   bool
 	Suggestion *[]prompt.Suggest
-	IsModule   bool
-	Module     int
-	SubModule  int
+	IsNf       bool
+	Nf         int
+	SubNf      int
 }

@@ -5,36 +5,42 @@ import (
 	"os"
 	"strings"
 
-	"github.com/muthuramanecs03g/nfcli/internal/nf"
 	"github.com/muthuramanecs03g/nfcli/internal/nf/upf"
+	"github.com/muthuramanecs03g/nfcli/lib"
 )
 
 func Executor(in string) {
-	if PromptConfig.Module == nf.NF_UPF {
-
-		upf.ExecutorUpf(in)
+	if PromptConfig.Nf == lib.NF_UPF {
+		fmt.Println("Main: UPF")
+		upf.ExecutorUpf(in, PromptConfig)
 	}
 
 	if strings.HasPrefix(in, "upf") {
+		fmt.Println("Main: UPF has prefix")
 		PromptConfig.Suggestion = &upf.UpfSuggestion
 		PromptConfig.IsEnable = true
 		PromptConfig.Prefix = "upf# "
-		PromptConfig.IsModule = true
-		PromptConfig.Module = nf.NF_UPF
+		PromptConfig.IsNf = true
+		PromptConfig.Nf = lib.NF_UPF
+		return
+	}
+
+	if PromptConfig.IsNf && PromptConfig.Nf != lib.NF_END {
 		return
 	}
 
 	if in == "exit" {
-		if PromptConfig.IsModule {
+		fmt.Println("Main: exit")
+		if PromptConfig.IsNf {
+			fmt.Println("Main: Changed to main")
 			PromptConfig.Suggestion = &MainSuggestion
 			PromptConfig.IsEnable = true
-			PromptConfig.Prefix = "nfcli> "
-			PromptConfig.IsModule = false
-			PromptConfig.Module = NF_MAIN
+			PromptConfig.Prefix = "nfcli# "
+			PromptConfig.IsNf = false
+			PromptConfig.Nf = NF_MAIN
 			return
 		}
-		upf.Exit()
-		fmt.Println("Bye Bye !")
+		fmt.Println("Bye Bye !!!")
 		os.Exit(0)
 	}
 }

@@ -1,7 +1,10 @@
 package upfdata
 
 import (
+	"strings"
+
 	"github.com/c-bata/go-prompt"
+	"github.com/muthuramanecs03g/nfcli/lib"
 )
 
 var UpfDataSuggestion = []prompt.Suggest{
@@ -11,6 +14,13 @@ var UpfDataSuggestion = []prompt.Suggest{
 	{Text: "exit", Description: "Exit the UPF data plane"},
 }
 
-func CompleterData(in prompt.Document) []prompt.Suggest {
-	return UpfDataSuggestion
+func CompleterData(in prompt.Document, promptConfig *lib.Prompt) []prompt.Suggest {
+	a := in.GetWordBeforeCursor()
+	a = strings.TrimSpace(a)
+	d := in.TextBeforeCursor()
+	if len(strings.Split(d, " ")) > 2 {
+		return []prompt.Suggest{}
+	}
+	promptConfig.Suggestion = &UpfDataSuggestion
+	return prompt.FilterHasPrefix(*promptConfig.Suggestion, a, true)
 }
