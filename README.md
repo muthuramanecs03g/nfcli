@@ -18,7 +18,7 @@ free5GC Network Function (NF) Command Line Interface (CLI)
 6) sudo make check
 7) sudo make install 
 8) thrift --version
-Thrift version 0.15.0
+    > Thrift version 0.15.0
 
 References
 * https://downloads.apache.org/thrift/
