@@ -1,0 +1,5 @@
+package upfdata
+
+func Exit() {
+
+}

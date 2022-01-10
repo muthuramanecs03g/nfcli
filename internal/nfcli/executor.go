@@ -2,15 +2,17 @@ package nfcli
 
 import (
 	"fmt"
-	"nfcli/internal/nf"
-	"nfcli/internal/nf/upf"
 	"os"
 	"strings"
+
+	"github.com/muthuramanecs03g/nfcli/internal/nf"
+	"github.com/muthuramanecs03g/nfcli/internal/nf/upf"
 )
 
 func Executor(in string) {
 	if PromptConfig.Module == nf.NF_UPF {
-		upf.Executor(in)
+
+		upf.ExecutorUpf(in)
 	}
 
 	if strings.HasPrefix(in, "upf") {
@@ -19,7 +21,6 @@ func Executor(in string) {
 		PromptConfig.Prefix = "upf# "
 		PromptConfig.IsModule = true
 		PromptConfig.Module = nf.NF_UPF
-		upf.Initialize()
 		return
 	}
 
@@ -32,6 +33,7 @@ func Executor(in string) {
 			PromptConfig.Module = NF_MAIN
 			return
 		}
+		upf.Exit()
 		fmt.Println("Bye Bye !")
 		os.Exit(0)
 	}

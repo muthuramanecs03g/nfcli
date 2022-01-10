@@ -7,7 +7,12 @@ const (
 )
 
 const (
-	NF_AMF uint = iota
+	NF_AMF int = iota
 	NF_SMF
 	NF_UPF
+)
+
+const (
+	NF_UPF_CONTROL int = iota
+	NF_UPF_DATA    int = iota
 )
