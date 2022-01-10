@@ -2,20 +2,23 @@ include "Upf.thrift"
 
 namespace go Upf
 
-typedef map<string, string> Data
+struct PortStats {
+    1:required i32 rxPktCount;
+    2:required i32 txPktCount;
+}
+typedef PortStats Stats
 
-struct Response {
+struct StatsResponse {
     1:required i32 errCode; 
     2:required string errMsg;
-    3:required Data data;
+    3:required Stats data;
 }
 
-service Greeter {
-    Response SayHello(
-        1:required Upf.User user
+service UpfService {
+    StatsResponse GetStats(
+        1:required i32 port
     )
-
-    Response GetUser(
-        1:required i32 uid
+    void ClearStats(
+        1:required i32 port
     )
 }

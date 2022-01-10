@@ -22,8 +22,8 @@ func Usage() {
   fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
   flag.PrintDefaults()
   fmt.Fprintln(os.Stderr, "\nFunctions:")
-  fmt.Fprintln(os.Stderr, "  Response SayHello(User user)")
-  fmt.Fprintln(os.Stderr, "  Response GetUser(i32 uid)")
+  fmt.Fprintln(os.Stderr, "  StatsResponse GetStats(i32 port)")
+  fmt.Fprintln(os.Stderr, "  void ClearStats(i32 port)")
   fmt.Fprintln(os.Stderr)
   os.Exit(0)
 }
@@ -139,51 +139,41 @@ func main() {
   }
   iprot := protocolFactory.GetProtocol(trans)
   oprot := protocolFactory.GetProtocol(trans)
-  client := Upf.NewGreeterClient(thrift.NewTStandardClient(iprot, oprot))
+  client := Upf.NewUpfServiceClient(thrift.NewTStandardClient(iprot, oprot))
   if err := trans.Open(); err != nil {
     fmt.Fprintln(os.Stderr, "Error opening socket to ", host, ":", port, " ", err)
     os.Exit(1)
   }
   
   switch cmd {
-  case "SayHello":
+  case "GetStats":
     if flag.NArg() - 1 != 1 {
-      fmt.Fprintln(os.Stderr, "SayHello requires 1 args")
+      fmt.Fprintln(os.Stderr, "GetStats requires 1 args")
       flag.Usage()
     }
-    arg13 := flag.Arg(1)
-    mbTrans14 := thrift.NewTMemoryBufferLen(len(arg13))
-    defer mbTrans14.Close()
-    _, err15 := mbTrans14.WriteString(arg13)
-    if err15 != nil {
-      Usage()
-      return
-    }
-    factory16 := thrift.NewTJSONProtocolFactory()
-    jsProt17 := factory16.GetProtocol(mbTrans14)
-    argvalue0 := Upf.NewUser()
-    err18 := argvalue0.Read(context.Background(), jsProt17)
-    if err18 != nil {
-      Usage()
-      return
-    }
-    value0 := argvalue0
-    fmt.Print(client.SayHello(context.Background(), value0))
-    fmt.Print("\n")
-    break
-  case "GetUser":
-    if flag.NArg() - 1 != 1 {
-      fmt.Fprintln(os.Stderr, "GetUser requires 1 args")
-      flag.Usage()
-    }
-    tmp0, err19 := (strconv.Atoi(flag.Arg(1)))
-    if err19 != nil {
+    tmp0, err9 := (strconv.Atoi(flag.Arg(1)))
+    if err9 != nil {
       Usage()
       return
     }
     argvalue0 := int32(tmp0)
     value0 := argvalue0
-    fmt.Print(client.GetUser(context.Background(), value0))
+    fmt.Print(client.GetStats(context.Background(), value0))
+    fmt.Print("\n")
+    break
+  case "ClearStats":
+    if flag.NArg() - 1 != 1 {
+      fmt.Fprintln(os.Stderr, "ClearStats requires 1 args")
+      flag.Usage()
+    }
+    tmp0, err10 := (strconv.Atoi(flag.Arg(1)))
+    if err10 != nil {
+      Usage()
+      return
+    }
+    argvalue0 := int32(tmp0)
+    value0 := argvalue0
+    fmt.Print(client.ClearStats(context.Background(), value0))
     fmt.Print("\n")
     break
   case "":
