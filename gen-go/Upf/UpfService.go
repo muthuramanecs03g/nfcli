@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"time"
 	thrift "github.com/apache/thrift/lib/go/thrift"
-
 )
 
 // (needed to ensure safety because of naive import list construction.)
@@ -17,10 +16,6 @@ var _ = fmt.Printf
 var _ = context.Background
 var _ = time.Now
 var _ = bytes.Equal
-
-type Stats *PortStats
-
-func StatsPtr(v Stats) *Stats { return &v }
 
 // Attributes:
 //  - RxPktCount
@@ -173,11 +168,11 @@ func (p *PortStats) String() string {
 // Attributes:
 //  - ErrCode
 //  - ErrMsg
-//  - Data
+//  - Stats
 type StatsResponse struct {
   ErrCode int32 `thrift:"errCode,1,required" db:"errCode" json:"errCode"`
   ErrMsg string `thrift:"errMsg,2,required" db:"errMsg" json:"errMsg"`
-  Data *Stats `thrift:"data,3,required" db:"data" json:"data"`
+  Stats *PortStats `thrift:"stats,3,required" db:"stats" json:"stats"`
 }
 
 func NewStatsResponse() *StatsResponse {
@@ -192,15 +187,15 @@ func (p *StatsResponse) GetErrCode() int32 {
 func (p *StatsResponse) GetErrMsg() string {
   return p.ErrMsg
 }
-var StatsResponse_Data_DEFAULT Stats
-func (p *StatsResponse) GetData() Stats {
-  if !p.IsSetData() {
-    return StatsResponse_Data_DEFAULT
+var StatsResponse_Stats_DEFAULT *PortStats
+func (p *StatsResponse) GetStats() *PortStats {
+  if !p.IsSetStats() {
+    return StatsResponse_Stats_DEFAULT
   }
-return *p.Data
+return p.Stats
 }
-func (p *StatsResponse) IsSetData() bool {
-  return p.Data != nil
+func (p *StatsResponse) IsSetStats() bool {
+  return p.Stats != nil
 }
 
 func (p *StatsResponse) Read(ctx context.Context, iprot thrift.TProtocol) error {
@@ -210,7 +205,7 @@ func (p *StatsResponse) Read(ctx context.Context, iprot thrift.TProtocol) error 
 
   var issetErrCode bool = false;
   var issetErrMsg bool = false;
-  var issetData bool = false;
+  var issetStats bool = false;
 
   for {
     _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin(ctx)
@@ -246,7 +241,7 @@ func (p *StatsResponse) Read(ctx context.Context, iprot thrift.TProtocol) error 
         if err := p.ReadField3(ctx, iprot); err != nil {
           return err
         }
-        issetData = true
+        issetStats = true
       } else {
         if err := iprot.Skip(ctx, fieldTypeId); err != nil {
           return err
@@ -270,8 +265,8 @@ func (p *StatsResponse) Read(ctx context.Context, iprot thrift.TProtocol) error 
   if !issetErrMsg{
     return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field ErrMsg is not set"));
   }
-  if !issetData{
-    return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Data is not set"));
+  if !issetStats{
+    return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Stats is not set"));
   }
   return nil
 }
@@ -295,9 +290,9 @@ func (p *StatsResponse)  ReadField2(ctx context.Context, iprot thrift.TProtocol)
 }
 
 func (p *StatsResponse)  ReadField3(ctx context.Context, iprot thrift.TProtocol) error {
-  p.Data = &PortStats{}
-  if err := p.Data.Read(ctx, iprot); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Data), err)
+  p.Stats = &PortStats{}
+  if err := p.Stats.Read(ctx, iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Stats), err)
   }
   return nil
 }
@@ -338,13 +333,13 @@ func (p *StatsResponse) writeField2(ctx context.Context, oprot thrift.TProtocol)
 }
 
 func (p *StatsResponse) writeField3(ctx context.Context, oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin(ctx, "data", thrift.STRUCT, 3); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:data: ", p), err) }
-  if err := p.Data.Write(ctx, oprot); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Data), err)
+  if err := oprot.WriteFieldBegin(ctx, "stats", thrift.STRUCT, 3); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:stats: ", p), err) }
+  if err := p.Stats.Write(ctx, oprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Stats), err)
   }
   if err := oprot.WriteFieldEnd(ctx); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 3:data: ", p), err) }
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 3:stats: ", p), err) }
   return err
 }
 
@@ -356,7 +351,7 @@ func (p *StatsResponse) Equals(other *StatsResponse) bool {
   }
   if p.ErrCode != other.ErrCode { return false }
   if p.ErrMsg != other.ErrMsg { return false }
-  if !p.Data.Equals(other.Data) { return false }
+  if !p.Stats.Equals(other.Stats) { return false }
   return true
 }
 
