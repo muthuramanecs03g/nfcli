@@ -1,6 +1,7 @@
 package upfdata
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/c-bata/go-prompt"
@@ -14,13 +15,32 @@ var UpfDataSuggestion = []prompt.Suggest{
 	{Text: "exit", Description: "Exit the UPF data plane"},
 }
 
-func CompleterData(in prompt.Document, promptConfig *lib.Prompt) []prompt.Suggest {
+func completerConnect(in prompt.Document) []prompt.Suggest {
 	a := in.GetWordBeforeCursor()
 	a = strings.TrimSpace(a)
-	d := in.TextBeforeCursor()
-	if len(strings.Split(d, " ")) > 2 {
-		return []prompt.Suggest{}
+	// d := strings.Split(in.TextBeforeCursor(), " ")
+
+	// if d[1] ==  {
+	// 	return prompt.FilterHasPrefix([]prompt.Suggest{
+	// 		{Text: "--ipv4", Description: "Specify the Thrif IPv4 address of UPF"},
+	// 	}, a, true)
+	// }
+
+	return prompt.FilterHasPrefix([]prompt.Suggest{
+		{Text: "--ipv4", Description: "Specify the Thrif IPv4 address of UPF"},
+	}, a, true)
+}
+func CompleterData(in prompt.Document, promptConfig *lib.Prompt) []prompt.Suggest {
+	a := in.TextBeforeCursor()
+	var split = strings.Split(a, " ")
+	// w := in.GetWordBeforeCursor()
+	if len(split) > 1 {
+		var v = split[0]
+		if v == "connect" {
+			fmt.Println("CompleterData: connect")
+			return completerConnect(in)
+		}
+		return prompt.FilterHasPrefix(*promptConfig.Suggestion, v, true)
 	}
-	promptConfig.Suggestion = &UpfDataSuggestion
 	return prompt.FilterHasPrefix(*promptConfig.Suggestion, a, true)
 }

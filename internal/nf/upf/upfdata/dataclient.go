@@ -7,8 +7,7 @@ import (
 	"github.com/muthuramanecs03g/nfcli/gen-go/Upf"
 )
 
-func GetClient() *Upf.GreeterClient {
-	addr := ":9090"
+func GetClient(addr string) *Upf.UpfServiceClient {
 	var transport thrift.TTransport
 	var err error
 	transport, err = thrift.NewTSocket(addr)
@@ -36,6 +35,6 @@ func GetClient() *Upf.GreeterClient {
 	iprot := protocolFactory.GetProtocol(transport)
 	oprot := protocolFactory.GetProtocol(transport)
 
-	client := Upf.NewGreeterClient(thrift.NewTStandardClient(iprot, oprot))
+	client := Upf.NewUpfServiceClient(thrift.NewTStandardClient(iprot, oprot))
 	return client
 }
