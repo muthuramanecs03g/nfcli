@@ -1,6 +1,5 @@
-# nfcli
-free5GC Network Function (NF) Command Line Interface (CLI) 
-
+# NFCLI
+free5GC Network Function (NF) Command Line Interface (CLI) based on Thrift 
 
 # Thrift Installation Steps
 1) Donwload Thrift 0.15.0
