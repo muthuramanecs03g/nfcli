@@ -14,7 +14,6 @@ type Prompt struct {
 }
 
 func InitializePrompt() {
-
 	PromptConfig = &Prompt{
 		IsEnable:   false,
 		IsModule:   false,
