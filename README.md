@@ -24,5 +24,5 @@ References
 * https://thrift-tutorial.readthedocs.io/en/latest/installation.html
 
 # NF Thrift compilation
-cd nfcli 
-thrift -r --gen go thrift/UpfService.thrift
+* cd nfcli 
+* thrift -r --gen go thrift/UpfService.thrift
