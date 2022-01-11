@@ -18,7 +18,7 @@ var MainSuggestion = []prompt.Suggest{
 	{Text: "amf", Description: "Connect with AMF"},
 	{Text: "smf", Description: "Connect with SMF"},
 	{Text: "upf", Description: "Connect with UPF"},
-	{Text: "exit", Description: "Exit from NFCli"},
+	{Text: "exit", Description: "Exit from NF CLI"},
 }
 
 // Completer is responsible for the autocompletion of the CLI

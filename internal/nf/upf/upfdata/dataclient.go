@@ -7,10 +7,11 @@ import (
 	"github.com/muthuramanecs03g/nfcli/gen-go/Upf"
 )
 
-func GetClient(addr string) *Upf.UpfServiceClient {
+func connectClient(ipv4, port string) {
 	var transport thrift.TTransport
 	var err error
-	transport, err = thrift.NewTSocket(addr)
+	addr := ipv4 + ":" + port
+	upfDataClient.transport, err = thrift.NewTSocket(addr)
 	if err != nil {
 		fmt.Println("Error opening socket:", err)
 	}
@@ -23,7 +24,7 @@ func GetClient(addr string) *Upf.UpfServiceClient {
 	var transportFactory thrift.TTransportFactory
 	transportFactory = thrift.NewTTransportFactory()
 
-	transport, err = transportFactory.GetTransport(transport)
+	transport, err = transportFactory.GetTransport(upfDataClient.transport)
 	if err != nil {
 		fmt.Println("error running client:", err)
 	}
@@ -35,6 +36,14 @@ func GetClient(addr string) *Upf.UpfServiceClient {
 	iprot := protocolFactory.GetProtocol(transport)
 	oprot := protocolFactory.GetProtocol(transport)
 
-	client := Upf.NewUpfServiceClient(thrift.NewTStandardClient(iprot, oprot))
-	return client
+	upfDataClient.upfDataConn = Upf.NewUpfServiceClient(thrift.NewTStandardClient(iprot, oprot))
+}
+
+func closeClient() {
+	if upfDataClient != nil && upfDataClient.upfDataConn != nil {
+		if upfDataClient.transport.IsOpen() == true {
+			upfDataClient.transport.Close()
+		}
+		upfDataClient.upfDataConn = nil
+	}
 }

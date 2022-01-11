@@ -11,12 +11,12 @@ import (
 
 func Executor(in string) {
 	if PromptConfig.Nf == lib.NF_UPF {
-		fmt.Println("Main: UPF")
+		// fmt.Println("Main: UPF")
 		upf.ExecutorUpf(in, PromptConfig)
 	}
 
 	if strings.HasPrefix(in, "upf") {
-		fmt.Println("Main: UPF has prefix")
+		// fmt.Println("Main: UPF has prefix")
 		PromptConfig.Suggestion = &upf.UpfSuggestion
 		PromptConfig.IsEnable = true
 		PromptConfig.Prefix = "upf# "
@@ -30,9 +30,9 @@ func Executor(in string) {
 	}
 
 	if in == "exit" {
-		fmt.Println("Main: exit")
+		// fmt.Println("Main: exit")
 		if PromptConfig.IsNf {
-			fmt.Println("Main: Changed to main")
+			// fmt.Println("Main: Changed to main")
 			PromptConfig.Suggestion = &MainSuggestion
 			PromptConfig.IsEnable = true
 			PromptConfig.Prefix = "nfcli# "
@@ -40,7 +40,7 @@ func Executor(in string) {
 			PromptConfig.Nf = NF_MAIN
 			return
 		}
-		fmt.Println("Bye Bye !!!")
+		fmt.Println("free5GC NF CLI Bye Bye Bye!!!")
 		os.Exit(0)
 	}
 }

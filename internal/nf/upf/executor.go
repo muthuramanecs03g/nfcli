@@ -1,7 +1,6 @@
 package upf
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/muthuramanecs03g/nfcli/internal/nf/upf/upfcontrol"
@@ -30,9 +29,9 @@ func ExecutorUpf(in string, promptConfig *lib.Prompt) {
 	}
 
 	if in == "exit" {
-		fmt.Println("ExecutorUPF: ", in, "SubNf: ", promptConfig.SubNf)
+		// fmt.Println("ExecutorUPF: ", in, "SubNf: ", promptConfig.SubNf)
 		if promptConfig.SubNf != lib.NF_INVALID {
-			fmt.Println("ExecutorUPF: UPF")
+			// fmt.Println("ExecutorUPF: UPF")
 			promptConfig.Suggestion = &UpfSuggestion
 			promptConfig.Prefix = "upf# "
 			promptConfig.SubNf = lib.NF_INVALID
