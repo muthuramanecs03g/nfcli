@@ -1,8 +1,15 @@
 namespace go Upf
 
 struct PortStats {
-    1:required i32 rxPktCount;
-    2:required i32 txPktCount;
+    1:required list<i32> rxPktCnt;
+	2:required list<i32> rxPktDropCnt;  
+	3:required i32 txNQfiPktCnt;
+	4:required i32 txNQfiPktDropCnt;
+	5:required list<i32> txPktCnt;          
+	6:required list<i32> txPktDropCnt;  
+	7:required list<list<i32>> dropperPkts;
+	8:required list<list<i32>> dropperDrops;
+	9:required list<i32> schedulerQDropCnt;
 }
 
 struct StatsResponse {

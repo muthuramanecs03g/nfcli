@@ -18,11 +18,25 @@ var _ = time.Now
 var _ = bytes.Equal
 
 // Attributes:
-//  - RxPktCount
-//  - TxPktCount
+//  - RxPktCnt
+//  - RxPktDropCnt
+//  - TxNQfiPktCnt
+//  - TxNQfiPktDropCnt
+//  - TxPktCnt
+//  - TxPktDropCnt
+//  - DropperPkts
+//  - DropperDrops
+//  - SchedulerQDropCnt
 type PortStats struct {
-  RxPktCount int32 `thrift:"rxPktCount,1,required" db:"rxPktCount" json:"rxPktCount"`
-  TxPktCount int32 `thrift:"txPktCount,2,required" db:"txPktCount" json:"txPktCount"`
+  RxPktCnt []int32 `thrift:"rxPktCnt,1,required" db:"rxPktCnt" json:"rxPktCnt"`
+  RxPktDropCnt []int32 `thrift:"rxPktDropCnt,2,required" db:"rxPktDropCnt" json:"rxPktDropCnt"`
+  TxNQfiPktCnt int32 `thrift:"txNQfiPktCnt,3,required" db:"txNQfiPktCnt" json:"txNQfiPktCnt"`
+  TxNQfiPktDropCnt int32 `thrift:"txNQfiPktDropCnt,4,required" db:"txNQfiPktDropCnt" json:"txNQfiPktDropCnt"`
+  TxPktCnt []int32 `thrift:"txPktCnt,5,required" db:"txPktCnt" json:"txPktCnt"`
+  TxPktDropCnt []int32 `thrift:"txPktDropCnt,6,required" db:"txPktDropCnt" json:"txPktDropCnt"`
+  DropperPkts [][]int32 `thrift:"dropperPkts,7,required" db:"dropperPkts" json:"dropperPkts"`
+  DropperDrops [][]int32 `thrift:"dropperDrops,8,required" db:"dropperDrops" json:"dropperDrops"`
+  SchedulerQDropCnt []int32 `thrift:"schedulerQDropCnt,9,required" db:"schedulerQDropCnt" json:"schedulerQDropCnt"`
 }
 
 func NewPortStats() *PortStats {
@@ -30,20 +44,55 @@ func NewPortStats() *PortStats {
 }
 
 
-func (p *PortStats) GetRxPktCount() int32 {
-  return p.RxPktCount
+func (p *PortStats) GetRxPktCnt() []int32 {
+  return p.RxPktCnt
 }
 
-func (p *PortStats) GetTxPktCount() int32 {
-  return p.TxPktCount
+func (p *PortStats) GetRxPktDropCnt() []int32 {
+  return p.RxPktDropCnt
+}
+
+func (p *PortStats) GetTxNQfiPktCnt() int32 {
+  return p.TxNQfiPktCnt
+}
+
+func (p *PortStats) GetTxNQfiPktDropCnt() int32 {
+  return p.TxNQfiPktDropCnt
+}
+
+func (p *PortStats) GetTxPktCnt() []int32 {
+  return p.TxPktCnt
+}
+
+func (p *PortStats) GetTxPktDropCnt() []int32 {
+  return p.TxPktDropCnt
+}
+
+func (p *PortStats) GetDropperPkts() [][]int32 {
+  return p.DropperPkts
+}
+
+func (p *PortStats) GetDropperDrops() [][]int32 {
+  return p.DropperDrops
+}
+
+func (p *PortStats) GetSchedulerQDropCnt() []int32 {
+  return p.SchedulerQDropCnt
 }
 func (p *PortStats) Read(ctx context.Context, iprot thrift.TProtocol) error {
   if _, err := iprot.ReadStructBegin(ctx); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
   }
 
-  var issetRxPktCount bool = false;
-  var issetTxPktCount bool = false;
+  var issetRxPktCnt bool = false;
+  var issetRxPktDropCnt bool = false;
+  var issetTxNQfiPktCnt bool = false;
+  var issetTxNQfiPktDropCnt bool = false;
+  var issetTxPktCnt bool = false;
+  var issetTxPktDropCnt bool = false;
+  var issetDropperPkts bool = false;
+  var issetDropperDrops bool = false;
+  var issetSchedulerQDropCnt bool = false;
 
   for {
     _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin(ctx)
@@ -53,22 +102,99 @@ func (p *PortStats) Read(ctx context.Context, iprot thrift.TProtocol) error {
     if fieldTypeId == thrift.STOP { break; }
     switch fieldId {
     case 1:
-      if fieldTypeId == thrift.I32 {
+      if fieldTypeId == thrift.LIST {
         if err := p.ReadField1(ctx, iprot); err != nil {
           return err
         }
-        issetRxPktCount = true
+        issetRxPktCnt = true
       } else {
         if err := iprot.Skip(ctx, fieldTypeId); err != nil {
           return err
         }
       }
     case 2:
-      if fieldTypeId == thrift.I32 {
+      if fieldTypeId == thrift.LIST {
         if err := p.ReadField2(ctx, iprot); err != nil {
           return err
         }
-        issetTxPktCount = true
+        issetRxPktDropCnt = true
+      } else {
+        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+          return err
+        }
+      }
+    case 3:
+      if fieldTypeId == thrift.I32 {
+        if err := p.ReadField3(ctx, iprot); err != nil {
+          return err
+        }
+        issetTxNQfiPktCnt = true
+      } else {
+        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+          return err
+        }
+      }
+    case 4:
+      if fieldTypeId == thrift.I32 {
+        if err := p.ReadField4(ctx, iprot); err != nil {
+          return err
+        }
+        issetTxNQfiPktDropCnt = true
+      } else {
+        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+          return err
+        }
+      }
+    case 5:
+      if fieldTypeId == thrift.LIST {
+        if err := p.ReadField5(ctx, iprot); err != nil {
+          return err
+        }
+        issetTxPktCnt = true
+      } else {
+        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+          return err
+        }
+      }
+    case 6:
+      if fieldTypeId == thrift.LIST {
+        if err := p.ReadField6(ctx, iprot); err != nil {
+          return err
+        }
+        issetTxPktDropCnt = true
+      } else {
+        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+          return err
+        }
+      }
+    case 7:
+      if fieldTypeId == thrift.LIST {
+        if err := p.ReadField7(ctx, iprot); err != nil {
+          return err
+        }
+        issetDropperPkts = true
+      } else {
+        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+          return err
+        }
+      }
+    case 8:
+      if fieldTypeId == thrift.LIST {
+        if err := p.ReadField8(ctx, iprot); err != nil {
+          return err
+        }
+        issetDropperDrops = true
+      } else {
+        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+          return err
+        }
+      }
+    case 9:
+      if fieldTypeId == thrift.LIST {
+        if err := p.ReadField9(ctx, iprot); err != nil {
+          return err
+        }
+        issetSchedulerQDropCnt = true
       } else {
         if err := iprot.Skip(ctx, fieldTypeId); err != nil {
           return err
@@ -86,30 +212,229 @@ func (p *PortStats) Read(ctx context.Context, iprot thrift.TProtocol) error {
   if err := iprot.ReadStructEnd(ctx); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
   }
-  if !issetRxPktCount{
-    return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field RxPktCount is not set"));
+  if !issetRxPktCnt{
+    return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field RxPktCnt is not set"));
   }
-  if !issetTxPktCount{
-    return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field TxPktCount is not set"));
+  if !issetRxPktDropCnt{
+    return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field RxPktDropCnt is not set"));
+  }
+  if !issetTxNQfiPktCnt{
+    return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field TxNQfiPktCnt is not set"));
+  }
+  if !issetTxNQfiPktDropCnt{
+    return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field TxNQfiPktDropCnt is not set"));
+  }
+  if !issetTxPktCnt{
+    return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field TxPktCnt is not set"));
+  }
+  if !issetTxPktDropCnt{
+    return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field TxPktDropCnt is not set"));
+  }
+  if !issetDropperPkts{
+    return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field DropperPkts is not set"));
+  }
+  if !issetDropperDrops{
+    return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field DropperDrops is not set"));
+  }
+  if !issetSchedulerQDropCnt{
+    return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field SchedulerQDropCnt is not set"));
   }
   return nil
 }
 
 func (p *PortStats)  ReadField1(ctx context.Context, iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadI32(ctx); err != nil {
-  return thrift.PrependError("error reading field 1: ", err)
+  _, size, err := iprot.ReadListBegin(ctx)
+  if err != nil {
+    return thrift.PrependError("error reading list begin: ", err)
+  }
+  tSlice := make([]int32, 0, size)
+  p.RxPktCnt =  tSlice
+  for i := 0; i < size; i ++ {
+var _elem0 int32
+    if v, err := iprot.ReadI32(ctx); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
 } else {
-  p.RxPktCount = v
+    _elem0 = v
 }
+    p.RxPktCnt = append(p.RxPktCnt, _elem0)
+  }
+  if err := iprot.ReadListEnd(ctx); err != nil {
+    return thrift.PrependError("error reading list end: ", err)
+  }
   return nil
 }
 
 func (p *PortStats)  ReadField2(ctx context.Context, iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadI32(ctx); err != nil {
-  return thrift.PrependError("error reading field 2: ", err)
+  _, size, err := iprot.ReadListBegin(ctx)
+  if err != nil {
+    return thrift.PrependError("error reading list begin: ", err)
+  }
+  tSlice := make([]int32, 0, size)
+  p.RxPktDropCnt =  tSlice
+  for i := 0; i < size; i ++ {
+var _elem1 int32
+    if v, err := iprot.ReadI32(ctx); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
 } else {
-  p.TxPktCount = v
+    _elem1 = v
 }
+    p.RxPktDropCnt = append(p.RxPktDropCnt, _elem1)
+  }
+  if err := iprot.ReadListEnd(ctx); err != nil {
+    return thrift.PrependError("error reading list end: ", err)
+  }
+  return nil
+}
+
+func (p *PortStats)  ReadField3(ctx context.Context, iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI32(ctx); err != nil {
+  return thrift.PrependError("error reading field 3: ", err)
+} else {
+  p.TxNQfiPktCnt = v
+}
+  return nil
+}
+
+func (p *PortStats)  ReadField4(ctx context.Context, iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI32(ctx); err != nil {
+  return thrift.PrependError("error reading field 4: ", err)
+} else {
+  p.TxNQfiPktDropCnt = v
+}
+  return nil
+}
+
+func (p *PortStats)  ReadField5(ctx context.Context, iprot thrift.TProtocol) error {
+  _, size, err := iprot.ReadListBegin(ctx)
+  if err != nil {
+    return thrift.PrependError("error reading list begin: ", err)
+  }
+  tSlice := make([]int32, 0, size)
+  p.TxPktCnt =  tSlice
+  for i := 0; i < size; i ++ {
+var _elem2 int32
+    if v, err := iprot.ReadI32(ctx); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    _elem2 = v
+}
+    p.TxPktCnt = append(p.TxPktCnt, _elem2)
+  }
+  if err := iprot.ReadListEnd(ctx); err != nil {
+    return thrift.PrependError("error reading list end: ", err)
+  }
+  return nil
+}
+
+func (p *PortStats)  ReadField6(ctx context.Context, iprot thrift.TProtocol) error {
+  _, size, err := iprot.ReadListBegin(ctx)
+  if err != nil {
+    return thrift.PrependError("error reading list begin: ", err)
+  }
+  tSlice := make([]int32, 0, size)
+  p.TxPktDropCnt =  tSlice
+  for i := 0; i < size; i ++ {
+var _elem3 int32
+    if v, err := iprot.ReadI32(ctx); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    _elem3 = v
+}
+    p.TxPktDropCnt = append(p.TxPktDropCnt, _elem3)
+  }
+  if err := iprot.ReadListEnd(ctx); err != nil {
+    return thrift.PrependError("error reading list end: ", err)
+  }
+  return nil
+}
+
+func (p *PortStats)  ReadField7(ctx context.Context, iprot thrift.TProtocol) error {
+  _, size, err := iprot.ReadListBegin(ctx)
+  if err != nil {
+    return thrift.PrependError("error reading list begin: ", err)
+  }
+  tSlice := make([][]int32, 0, size)
+  p.DropperPkts =  tSlice
+  for i := 0; i < size; i ++ {
+    _, size, err := iprot.ReadListBegin(ctx)
+    if err != nil {
+      return thrift.PrependError("error reading list begin: ", err)
+    }
+    tSlice := make([]int32, 0, size)
+    _elem4 :=  tSlice
+    for i := 0; i < size; i ++ {
+var _elem5 int32
+      if v, err := iprot.ReadI32(ctx); err != nil {
+      return thrift.PrependError("error reading field 0: ", err)
+} else {
+      _elem5 = v
+}
+      _elem4 = append(_elem4, _elem5)
+    }
+    if err := iprot.ReadListEnd(ctx); err != nil {
+      return thrift.PrependError("error reading list end: ", err)
+    }
+    p.DropperPkts = append(p.DropperPkts, _elem4)
+  }
+  if err := iprot.ReadListEnd(ctx); err != nil {
+    return thrift.PrependError("error reading list end: ", err)
+  }
+  return nil
+}
+
+func (p *PortStats)  ReadField8(ctx context.Context, iprot thrift.TProtocol) error {
+  _, size, err := iprot.ReadListBegin(ctx)
+  if err != nil {
+    return thrift.PrependError("error reading list begin: ", err)
+  }
+  tSlice := make([][]int32, 0, size)
+  p.DropperDrops =  tSlice
+  for i := 0; i < size; i ++ {
+    _, size, err := iprot.ReadListBegin(ctx)
+    if err != nil {
+      return thrift.PrependError("error reading list begin: ", err)
+    }
+    tSlice := make([]int32, 0, size)
+    _elem6 :=  tSlice
+    for i := 0; i < size; i ++ {
+var _elem7 int32
+      if v, err := iprot.ReadI32(ctx); err != nil {
+      return thrift.PrependError("error reading field 0: ", err)
+} else {
+      _elem7 = v
+}
+      _elem6 = append(_elem6, _elem7)
+    }
+    if err := iprot.ReadListEnd(ctx); err != nil {
+      return thrift.PrependError("error reading list end: ", err)
+    }
+    p.DropperDrops = append(p.DropperDrops, _elem6)
+  }
+  if err := iprot.ReadListEnd(ctx); err != nil {
+    return thrift.PrependError("error reading list end: ", err)
+  }
+  return nil
+}
+
+func (p *PortStats)  ReadField9(ctx context.Context, iprot thrift.TProtocol) error {
+  _, size, err := iprot.ReadListBegin(ctx)
+  if err != nil {
+    return thrift.PrependError("error reading list begin: ", err)
+  }
+  tSlice := make([]int32, 0, size)
+  p.SchedulerQDropCnt =  tSlice
+  for i := 0; i < size; i ++ {
+var _elem8 int32
+    if v, err := iprot.ReadI32(ctx); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    _elem8 = v
+}
+    p.SchedulerQDropCnt = append(p.SchedulerQDropCnt, _elem8)
+  }
+  if err := iprot.ReadListEnd(ctx); err != nil {
+    return thrift.PrependError("error reading list end: ", err)
+  }
   return nil
 }
 
@@ -119,6 +444,13 @@ func (p *PortStats) Write(ctx context.Context, oprot thrift.TProtocol) error {
   if p != nil {
     if err := p.writeField1(ctx, oprot); err != nil { return err }
     if err := p.writeField2(ctx, oprot); err != nil { return err }
+    if err := p.writeField3(ctx, oprot); err != nil { return err }
+    if err := p.writeField4(ctx, oprot); err != nil { return err }
+    if err := p.writeField5(ctx, oprot); err != nil { return err }
+    if err := p.writeField6(ctx, oprot); err != nil { return err }
+    if err := p.writeField7(ctx, oprot); err != nil { return err }
+    if err := p.writeField8(ctx, oprot); err != nil { return err }
+    if err := p.writeField9(ctx, oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(ctx); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -128,22 +460,164 @@ func (p *PortStats) Write(ctx context.Context, oprot thrift.TProtocol) error {
 }
 
 func (p *PortStats) writeField1(ctx context.Context, oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin(ctx, "rxPktCount", thrift.I32, 1); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:rxPktCount: ", p), err) }
-  if err := oprot.WriteI32(ctx, int32(p.RxPktCount)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.rxPktCount (1) field write error: ", p), err) }
+  if err := oprot.WriteFieldBegin(ctx, "rxPktCnt", thrift.LIST, 1); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:rxPktCnt: ", p), err) }
+  if err := oprot.WriteListBegin(ctx, thrift.I32, len(p.RxPktCnt)); err != nil {
+    return thrift.PrependError("error writing list begin: ", err)
+  }
+  for _, v := range p.RxPktCnt {
+    if err := oprot.WriteI32(ctx, int32(v)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+  }
+  if err := oprot.WriteListEnd(ctx); err != nil {
+    return thrift.PrependError("error writing list end: ", err)
+  }
   if err := oprot.WriteFieldEnd(ctx); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:rxPktCount: ", p), err) }
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:rxPktCnt: ", p), err) }
   return err
 }
 
 func (p *PortStats) writeField2(ctx context.Context, oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin(ctx, "txPktCount", thrift.I32, 2); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:txPktCount: ", p), err) }
-  if err := oprot.WriteI32(ctx, int32(p.TxPktCount)); err != nil {
-  return thrift.PrependError(fmt.Sprintf("%T.txPktCount (2) field write error: ", p), err) }
+  if err := oprot.WriteFieldBegin(ctx, "rxPktDropCnt", thrift.LIST, 2); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:rxPktDropCnt: ", p), err) }
+  if err := oprot.WriteListBegin(ctx, thrift.I32, len(p.RxPktDropCnt)); err != nil {
+    return thrift.PrependError("error writing list begin: ", err)
+  }
+  for _, v := range p.RxPktDropCnt {
+    if err := oprot.WriteI32(ctx, int32(v)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+  }
+  if err := oprot.WriteListEnd(ctx); err != nil {
+    return thrift.PrependError("error writing list end: ", err)
+  }
   if err := oprot.WriteFieldEnd(ctx); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 2:txPktCount: ", p), err) }
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 2:rxPktDropCnt: ", p), err) }
+  return err
+}
+
+func (p *PortStats) writeField3(ctx context.Context, oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin(ctx, "txNQfiPktCnt", thrift.I32, 3); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:txNQfiPktCnt: ", p), err) }
+  if err := oprot.WriteI32(ctx, int32(p.TxNQfiPktCnt)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.txNQfiPktCnt (3) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 3:txNQfiPktCnt: ", p), err) }
+  return err
+}
+
+func (p *PortStats) writeField4(ctx context.Context, oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin(ctx, "txNQfiPktDropCnt", thrift.I32, 4); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:txNQfiPktDropCnt: ", p), err) }
+  if err := oprot.WriteI32(ctx, int32(p.TxNQfiPktDropCnt)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.txNQfiPktDropCnt (4) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 4:txNQfiPktDropCnt: ", p), err) }
+  return err
+}
+
+func (p *PortStats) writeField5(ctx context.Context, oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin(ctx, "txPktCnt", thrift.LIST, 5); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:txPktCnt: ", p), err) }
+  if err := oprot.WriteListBegin(ctx, thrift.I32, len(p.TxPktCnt)); err != nil {
+    return thrift.PrependError("error writing list begin: ", err)
+  }
+  for _, v := range p.TxPktCnt {
+    if err := oprot.WriteI32(ctx, int32(v)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+  }
+  if err := oprot.WriteListEnd(ctx); err != nil {
+    return thrift.PrependError("error writing list end: ", err)
+  }
+  if err := oprot.WriteFieldEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 5:txPktCnt: ", p), err) }
+  return err
+}
+
+func (p *PortStats) writeField6(ctx context.Context, oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin(ctx, "txPktDropCnt", thrift.LIST, 6); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:txPktDropCnt: ", p), err) }
+  if err := oprot.WriteListBegin(ctx, thrift.I32, len(p.TxPktDropCnt)); err != nil {
+    return thrift.PrependError("error writing list begin: ", err)
+  }
+  for _, v := range p.TxPktDropCnt {
+    if err := oprot.WriteI32(ctx, int32(v)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+  }
+  if err := oprot.WriteListEnd(ctx); err != nil {
+    return thrift.PrependError("error writing list end: ", err)
+  }
+  if err := oprot.WriteFieldEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 6:txPktDropCnt: ", p), err) }
+  return err
+}
+
+func (p *PortStats) writeField7(ctx context.Context, oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin(ctx, "dropperPkts", thrift.LIST, 7); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 7:dropperPkts: ", p), err) }
+  if err := oprot.WriteListBegin(ctx, thrift.LIST, len(p.DropperPkts)); err != nil {
+    return thrift.PrependError("error writing list begin: ", err)
+  }
+  for _, v := range p.DropperPkts {
+    if err := oprot.WriteListBegin(ctx, thrift.I32, len(v)); err != nil {
+      return thrift.PrependError("error writing list begin: ", err)
+    }
+    for _, v := range v {
+      if err := oprot.WriteI32(ctx, int32(v)); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+    }
+    if err := oprot.WriteListEnd(ctx); err != nil {
+      return thrift.PrependError("error writing list end: ", err)
+    }
+  }
+  if err := oprot.WriteListEnd(ctx); err != nil {
+    return thrift.PrependError("error writing list end: ", err)
+  }
+  if err := oprot.WriteFieldEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 7:dropperPkts: ", p), err) }
+  return err
+}
+
+func (p *PortStats) writeField8(ctx context.Context, oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin(ctx, "dropperDrops", thrift.LIST, 8); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 8:dropperDrops: ", p), err) }
+  if err := oprot.WriteListBegin(ctx, thrift.LIST, len(p.DropperDrops)); err != nil {
+    return thrift.PrependError("error writing list begin: ", err)
+  }
+  for _, v := range p.DropperDrops {
+    if err := oprot.WriteListBegin(ctx, thrift.I32, len(v)); err != nil {
+      return thrift.PrependError("error writing list begin: ", err)
+    }
+    for _, v := range v {
+      if err := oprot.WriteI32(ctx, int32(v)); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+    }
+    if err := oprot.WriteListEnd(ctx); err != nil {
+      return thrift.PrependError("error writing list end: ", err)
+    }
+  }
+  if err := oprot.WriteListEnd(ctx); err != nil {
+    return thrift.PrependError("error writing list end: ", err)
+  }
+  if err := oprot.WriteFieldEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 8:dropperDrops: ", p), err) }
+  return err
+}
+
+func (p *PortStats) writeField9(ctx context.Context, oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin(ctx, "schedulerQDropCnt", thrift.LIST, 9); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 9:schedulerQDropCnt: ", p), err) }
+  if err := oprot.WriteListBegin(ctx, thrift.I32, len(p.SchedulerQDropCnt)); err != nil {
+    return thrift.PrependError("error writing list begin: ", err)
+  }
+  for _, v := range p.SchedulerQDropCnt {
+    if err := oprot.WriteI32(ctx, int32(v)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+  }
+  if err := oprot.WriteListEnd(ctx); err != nil {
+    return thrift.PrependError("error writing list end: ", err)
+  }
+  if err := oprot.WriteFieldEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 9:schedulerQDropCnt: ", p), err) }
   return err
 }
 
@@ -153,8 +627,51 @@ func (p *PortStats) Equals(other *PortStats) bool {
   } else if p == nil || other == nil {
     return false
   }
-  if p.RxPktCount != other.RxPktCount { return false }
-  if p.TxPktCount != other.TxPktCount { return false }
+  if len(p.RxPktCnt) != len(other.RxPktCnt) { return false }
+  for i, _tgt := range p.RxPktCnt {
+    _src9 := other.RxPktCnt[i]
+    if _tgt != _src9 { return false }
+  }
+  if len(p.RxPktDropCnt) != len(other.RxPktDropCnt) { return false }
+  for i, _tgt := range p.RxPktDropCnt {
+    _src10 := other.RxPktDropCnt[i]
+    if _tgt != _src10 { return false }
+  }
+  if p.TxNQfiPktCnt != other.TxNQfiPktCnt { return false }
+  if p.TxNQfiPktDropCnt != other.TxNQfiPktDropCnt { return false }
+  if len(p.TxPktCnt) != len(other.TxPktCnt) { return false }
+  for i, _tgt := range p.TxPktCnt {
+    _src11 := other.TxPktCnt[i]
+    if _tgt != _src11 { return false }
+  }
+  if len(p.TxPktDropCnt) != len(other.TxPktDropCnt) { return false }
+  for i, _tgt := range p.TxPktDropCnt {
+    _src12 := other.TxPktDropCnt[i]
+    if _tgt != _src12 { return false }
+  }
+  if len(p.DropperPkts) != len(other.DropperPkts) { return false }
+  for i, _tgt := range p.DropperPkts {
+    _src13 := other.DropperPkts[i]
+    if len(_tgt) != len(_src13) { return false }
+    for i, _tgt := range _tgt {
+      _src14 := _src13[i]
+      if _tgt != _src14 { return false }
+    }
+  }
+  if len(p.DropperDrops) != len(other.DropperDrops) { return false }
+  for i, _tgt := range p.DropperDrops {
+    _src15 := other.DropperDrops[i]
+    if len(_tgt) != len(_src15) { return false }
+    for i, _tgt := range _tgt {
+      _src16 := _src15[i]
+      if _tgt != _src16 { return false }
+    }
+  }
+  if len(p.SchedulerQDropCnt) != len(other.SchedulerQDropCnt) { return false }
+  for i, _tgt := range p.SchedulerQDropCnt {
+    _src17 := other.SchedulerQDropCnt[i]
+    if _tgt != _src17 { return false }
+  }
   return true
 }
 
@@ -409,17 +926,17 @@ func (p *UpfServiceClient) SetLastResponseMeta_(meta thrift.ResponseMeta) {
 // Parameters:
 //  - Port
 func (p *UpfServiceClient) GetStats(ctx context.Context, port int32) (_r *StatsResponse, _err error) {
-  var _args0 UpfServiceGetStatsArgs
-  _args0.Port = port
-  var _result2 UpfServiceGetStatsResult
-  var _meta1 thrift.ResponseMeta
-  _meta1, _err = p.Client_().Call(ctx, "GetStats", &_args0, &_result2)
-  p.SetLastResponseMeta_(_meta1)
+  var _args18 UpfServiceGetStatsArgs
+  _args18.Port = port
+  var _result20 UpfServiceGetStatsResult
+  var _meta19 thrift.ResponseMeta
+  _meta19, _err = p.Client_().Call(ctx, "GetStats", &_args18, &_result20)
+  p.SetLastResponseMeta_(_meta19)
   if _err != nil {
     return
   }
-  if _ret3 := _result2.GetSuccess(); _ret3 != nil {
-    return _ret3, nil
+  if _ret21 := _result20.GetSuccess(); _ret21 != nil {
+    return _ret21, nil
   }
   return nil, thrift.NewTApplicationException(thrift.MISSING_RESULT, "GetStats failed: unknown result")
 }
@@ -427,12 +944,12 @@ func (p *UpfServiceClient) GetStats(ctx context.Context, port int32) (_r *StatsR
 // Parameters:
 //  - Port
 func (p *UpfServiceClient) ClearStats(ctx context.Context, port int32) (_err error) {
-  var _args4 UpfServiceClearStatsArgs
-  _args4.Port = port
-  var _result6 UpfServiceClearStatsResult
-  var _meta5 thrift.ResponseMeta
-  _meta5, _err = p.Client_().Call(ctx, "ClearStats", &_args4, &_result6)
-  p.SetLastResponseMeta_(_meta5)
+  var _args22 UpfServiceClearStatsArgs
+  _args22.Port = port
+  var _result24 UpfServiceClearStatsResult
+  var _meta23 thrift.ResponseMeta
+  _meta23, _err = p.Client_().Call(ctx, "ClearStats", &_args22, &_result24)
+  p.SetLastResponseMeta_(_meta23)
   if _err != nil {
     return
   }
@@ -459,10 +976,10 @@ func (p *UpfServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFunctio
 
 func NewUpfServiceProcessor(handler UpfService) *UpfServiceProcessor {
 
-  self7 := &UpfServiceProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
-  self7.processorMap["GetStats"] = &upfServiceProcessorGetStats{handler:handler}
-  self7.processorMap["ClearStats"] = &upfServiceProcessorClearStats{handler:handler}
-return self7
+  self25 := &UpfServiceProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
+  self25.processorMap["GetStats"] = &upfServiceProcessorGetStats{handler:handler}
+  self25.processorMap["ClearStats"] = &upfServiceProcessorClearStats{handler:handler}
+return self25
 }
 
 func (p *UpfServiceProcessor) Process(ctx context.Context, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -473,12 +990,12 @@ func (p *UpfServiceProcessor) Process(ctx context.Context, iprot, oprot thrift.T
   }
   iprot.Skip(ctx, thrift.STRUCT)
   iprot.ReadMessageEnd(ctx)
-  x8 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
+  x26 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
   oprot.WriteMessageBegin(ctx, name, thrift.EXCEPTION, seqId)
-  x8.Write(ctx, oprot)
+  x26.Write(ctx, oprot)
   oprot.WriteMessageEnd(ctx)
   oprot.Flush(ctx)
-  return false, x8
+  return false, x26
 
 }
 

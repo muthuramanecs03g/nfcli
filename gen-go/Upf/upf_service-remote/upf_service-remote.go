@@ -151,8 +151,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "GetStats requires 1 args")
       flag.Usage()
     }
-    tmp0, err9 := (strconv.Atoi(flag.Arg(1)))
-    if err9 != nil {
+    tmp0, err27 := (strconv.Atoi(flag.Arg(1)))
+    if err27 != nil {
       Usage()
       return
     }
@@ -166,8 +166,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "ClearStats requires 1 args")
       flag.Usage()
     }
-    tmp0, err10 := (strconv.Atoi(flag.Arg(1)))
-    if err10 != nil {
+    tmp0, err28 := (strconv.Atoi(flag.Arg(1)))
+    if err28 != nil {
       Usage()
       return
     }
