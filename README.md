@@ -23,6 +23,23 @@ References
 * https://downloads.apache.org/thrift/
 * https://thrift-tutorial.readthedocs.io/en/latest/installation.html
 
-# NF Thrift compilation
+# NF Thrift Compilation
 * cd nfcli 
 * thrift -r --gen go thrift/UpfService.thrift
+
+# Supported
+| NF Name                |   Thrift Service  |
+| ---------------------- | -----------------:|
+| AMF                    | TODO              |  
+| SMF                    | TODO              |   
+| UPF                    | TODO              | 
+| UPF CP  (Proprietary)  | TODO              |   
+| UPF DP  (Proprietary)  | In-Progress       | 
+| AUSF                   | TODO              | 
+| N3IWF                  | TODO              | 
+| NRF                    | TODO              | 
+| NSSF                   | TODO              | 
+| PCF                    | TODO              | 
+| UDM                    | TODO              | 
+| UDR                    | TODO              | 
+| NEF                    | TODO              | 
