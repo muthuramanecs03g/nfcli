@@ -12,12 +12,14 @@ var UpfDataSuggestion = []prompt.Suggest{
 	{Text: "stats", Description: "Get the statistics report"},
 	{Text: "clear", Description: "Clear the statistics report of ports"},
 	{Text: "close", Description: "Close the currently connected UPF data plane"},
+	{Text: "status", Description: "Status the currently connected UPF data plane"},
+	{Text: "list", Description: "List of connected UPF data plane"},
+	{Text: "log", Description: "Log the statistics report"},
 	{Text: "exit", Description: "Exit the UPF data plane"},
 }
 
 var optionHelp = []prompt.Suggest{
-	{Text: "-h"},
-	{Text: "--help"},
+	{Text: "help", Description: "List of UPF data plane commands"},
 }
 
 var globalOptions = []prompt.Suggest{
@@ -26,19 +28,42 @@ var globalOptions = []prompt.Suggest{
 
 var connectOptions = []prompt.Suggest{
 	prompt.Suggest{Text: "--ipv4", Description: "UPF data plane Thrift server Ipv4 address"},
+	prompt.Suggest{Text: "-i", Description: "UPF data plane Thrift server Ipv4 address"},
 	prompt.Suggest{Text: "--port", Description: "UPF data plane Thrfit server listening port"},
+	prompt.Suggest{Text: "-p", Description: "UPF data plane Thrfit server listening port"},
 }
 
 var statsOptions = []prompt.Suggest{
 	prompt.Suggest{Text: "--n3", Description: "UPF data plane N3 port number"},
 	prompt.Suggest{Text: "--n6", Description: "UPF data plane N6 port number"},
 	prompt.Suggest{Text: "--n9", Description: "UPF data plane N9 port number"},
+	prompt.Suggest{Text: "--times", Description: "Number of times query the stats"},
 }
 
 var clearOptions = []prompt.Suggest{
 	prompt.Suggest{Text: "--n3", Description: "UPF data plane N3 port number"},
 	prompt.Suggest{Text: "--n6", Description: "UPF data plane N6 port number"},
 	prompt.Suggest{Text: "--n9", Description: "UPF data plane N9 port number"},
+}
+
+var closeOptions = []prompt.Suggest{
+	prompt.Suggest{Text: "--id", Description: "Identifier of UPF data plane to be close"},
+	prompt.Suggest{Text: "--all", Description: "Close all connected UPF data plane"},
+	prompt.Suggest{Text: "-a", Description: "Close all connected UPF data plane"},
+}
+
+var statusOptions = []prompt.Suggest{
+	prompt.Suggest{Text: "--id", Description: "Identfier of UPF data plane Thrfit server"},
+	prompt.Suggest{Text: "--start", Description: "Starting index of UPD data plane Thrfit server"},
+	prompt.Suggest{Text: "--count", Description: "Number of UPF data plane Thrfit server status to be display"},
+}
+
+var listOptions = []prompt.Suggest{
+	prompt.Suggest{Text: "--count", Description: "Number of UPF data plane Thrfit server to be display"},
+}
+
+var logOptions = []prompt.Suggest{
+	prompt.Suggest{Text: "--write", Description: "Number of UPF data plane Thrfit server status"},
 }
 
 func completerConnect(in prompt.Document) []prompt.Suggest {
@@ -133,6 +158,14 @@ func optionCompleter(args []string, long bool) []prompt.Suggest {
 		suggests = statsOptions
 	case "clear":
 		suggests = clearOptions
+	case "close":
+		suggests = clearOptions
+	case "status":
+		suggests = statusOptions
+	case "list":
+		suggests = listOptions
+	case "log":
+		suggests = logOptions
 	default:
 		suggests = optionHelp
 	}
