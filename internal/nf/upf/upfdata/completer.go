@@ -15,6 +15,7 @@ var UpfDataSuggestion = []prompt.Suggest{
 	{Text: "status", Description: "Status the currently connected UPF data plane"},
 	{Text: "list", Description: "List of connected UPF data plane"},
 	{Text: "log", Description: "Log the statistics report"},
+	{Text: "help", Description: "List of UPF data plane commands"},
 	{Text: "exit", Description: "Exit the UPF data plane"},
 }
 
@@ -37,7 +38,7 @@ var statsOptions = []prompt.Suggest{
 	prompt.Suggest{Text: "--n3", Description: "UPF data plane N3 port number"},
 	prompt.Suggest{Text: "--n6", Description: "UPF data plane N6 port number"},
 	prompt.Suggest{Text: "--n9", Description: "UPF data plane N9 port number"},
-	prompt.Suggest{Text: "--times", Description: "Number of times query the stats"},
+	prompt.Suggest{Text: "--times", Description: "Number of times query the stats per sec(default 1)"},
 }
 
 var clearOptions = []prompt.Suggest{
@@ -65,37 +66,6 @@ var listOptions = []prompt.Suggest{
 var logOptions = []prompt.Suggest{
 	prompt.Suggest{Text: "--write", Description: "Number of UPF data plane Thrfit server status"},
 }
-
-func completerConnect(in prompt.Document) []prompt.Suggest {
-	a := in.GetWordBeforeCursor()
-	a = strings.TrimSpace(a)
-	// d := strings.Split(in.TextBeforeCursor(), " ")
-
-	// if d[1] ==  {
-	// 	return prompt.FilterHasPrefix([]prompt.Suggest{
-	// 		{Text: "--ipv4", Description: "Specify the Thrif IPv4 address of UPF"},
-	// 	}, a, true)
-	// }
-
-	return prompt.FilterHasPrefix([]prompt.Suggest{
-		{Text: "--ipv4", Description: "Specify the Thrif IPv4 address of UPF"},
-	}, a, true)
-}
-
-// func CompleterData(in prompt.Document, promptConfig *lib.Prompt) []prompt.Suggest {
-// 	a := in.TextBeforeCursor()
-// 	var split = strings.Split(a, " ")
-// 	// w := in.GetWordBeforeCursor()
-// 	if len(split) > 1 {
-// 		var v = split[0]
-// 		if v == "connect" {
-// 			fmt.Println("CompleterData: connect")
-// 			return completerConnect(in)
-// 		}
-// 		return prompt.FilterHasPrefix(*promptConfig.Suggestion, v, true)
-// 	}
-// 	return prompt.FilterHasPrefix(*promptConfig.Suggestion, a, true)
-// }
 
 func excludeOptions(args []string) ([]string, bool) {
 	l := len(args)
@@ -194,30 +164,20 @@ func getPreviousOption(d prompt.Document) (cmd, option string, found bool) {
 }
 
 func completeOptionArguments(d prompt.Document) ([]prompt.Suggest, bool) {
-	//cmd, option, found := getPreviousOption(d)
-	_, _, found := getPreviousOption(d)
+	cmd, _, found := getPreviousOption(d)
 	if !found {
 		return []prompt.Suggest{}, false
 	}
 
 	// commands
-	// switch cmd {
-	// case "connect", "stats", "clear":
-	// 	if option == "-c" || option == "--container" {
-	// 		cmdArgs := getCommandArgs(d)
-	// 		var suggestions []prompt.Suggest
-	// 		if cmdArgs == nil || len(cmdArgs) < 2 {
-	// 			suggestions = getContainerNamesFromCachedPods(c.client, c.namespace)
-	// 		} else {
-	// 			suggestions = getContainerName(c.client, c.namespace, cmdArgs[1])
-	// 		}
-	// 		return prompt.FilterHasPrefix(
-	// 			suggestions,
-	// 			d.GetWordBeforeCursor(),
-	// 			true,
-	// 		), true
-	// 	}
-	// }
+	switch cmd {
+	case "help":
+		return prompt.FilterHasPrefix(
+			UpfDataSuggestion,
+			d.GetWordBeforeCursor(),
+			true,
+		), true
+	}
 	return []prompt.Suggest{}, false
 }
 
@@ -240,6 +200,8 @@ func argumentsCompleter(args []string) []prompt.Suggest {
 	case "close":
 		// second := args[1]
 		// fmt.Println("Second: ", second)
+	case "help":
+		return UpfDataSuggestion
 	default:
 		return []prompt.Suggest{}
 	}

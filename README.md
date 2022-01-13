@@ -43,3 +43,5 @@ free5GC Network Function (NF) Command Line Interface (CLI) based on Thrift
 # References
 - [x] https://downloads.apache.org/thrift/
 - [x] https://thrift-tutorial.readthedocs.io/en/latest/installation.html
+- [x] https://github.com/c-bata/go-prompt
+- [x] https://github.com/shynuu/free5gc-cli

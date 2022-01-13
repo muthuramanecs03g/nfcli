@@ -13,18 +13,16 @@ var ctx = context.Background()
 
 // Connect to the Thrift Server
 // connect --ipv4 10.20.0.10 --port 9090
-func upfDataConnect(in string) {
-	cmd := strings.Split(strings.TrimSpace(in), " ")
+func upfDataConnect(cmd []string) {
 	l := len(cmd)
-
 	if l < 5 {
 		return
 	}
 
-	fmt.Println("upfDataConnect: ")
-	for idx, str := range cmd {
-		fmt.Printf("Idx: %d Str: %s\n", idx, str)
-	}
+	// fmt.Println("upfDataConnect: ")
+	// for idx, str := range cmd {
+	// 	fmt.Printf("Idx: %d Str: %s\n", idx, str)
+	// }
 
 	connectClient(cmd[2], cmd[4])
 }
@@ -54,17 +52,15 @@ func dumpPortStatistics(stats *Upf.PortStats) {
 	fmt.Println(stats.TxPktDropCnt)
 }
 
-// stats --n3 1 --n4 2 --n6 3
-func upfDataStats(in string) {
-	cmd := strings.Split(strings.TrimSpace(in), " ")
+// stats --n3 1 --n6 2 --n9 3 --times 1
+func upfDataStats(cmd []string) {
 	l := len(cmd)
-
 	if l < 3 {
 		return
 	}
 
 	if upfDataClient.upfDataConn == nil {
-		fmt.Println("upfDataStats: No connection exists, try connect again")
+		fmt.Println("upfDataStats: No connection exists, try connect command")
 		return
 	}
 
@@ -96,10 +92,8 @@ func upfDataStats(in string) {
 }
 
 // clear --n3 1 --n6 2 --n9 3
-func upfDataClear(in string) {
-	cmd := strings.Split(strings.TrimSpace(in), " ")
+func upfDataClear(cmd []string) {
 	l := len(cmd)
-
 	if l < 3 {
 		return
 	}
@@ -128,7 +122,7 @@ func upfDataClear(in string) {
 }
 
 // close
-func upfDataClose(in string) {
+func upfDataClose(cmd []string) {
 	if upfDataClient.upfDataConn == nil {
 		fmt.Println("upfDataStats: No connection exists")
 		return
@@ -136,30 +130,57 @@ func upfDataClose(in string) {
 	closeClient()
 }
 
+func upfDataHelp(cmd []string) {
+	l := len(cmd)
+	if l < 2 {
+		return
+	}
+	switch cmd[1] {
+	case "connect":
+		fmt.Println("Description: Connect to the UPF data plane thrift server")
+		fmt.Println("Usage: connect --ipv4 10.10.0.10 --port 9090")
+	case "stats":
+		fmt.Println("Description: Get the statistics report of data plane ports")
+		fmt.Println("Usage: stats --n3 1 --n6 2 --n9 3 --times 10")
+	case "clear":
+		fmt.Println("Description: Clear the statistics report of data plane ports")
+		fmt.Println("Usage: clear --n3 1 --n6 2 --n9 3 ")
+	case "close":
+		fmt.Println("Description: Close the connected UPF data plane")
+		fmt.Println("Usage: close --id 1 --all")
+	case "status":
+		fmt.Println("Description: Status the currently connected UPF data plane")
+		fmt.Println("Usage: status --id 1 --all")
+	case "list":
+		fmt.Println("Description: List of connected UPF data plane")
+		fmt.Println("Usage: list --id 0 --count 2")
+	case "log":
+		fmt.Println("Description: Log the port statistics report")
+		fmt.Println("Usage: log --write filename.txt")
+	case "exit":
+		fmt.Println("Description: Exit from the UPF data plane")
+		fmt.Println("Usage: exit")
+	default:
+		fmt.Println("Unrecognized the command: ", cmd[1])
+	}
+}
+
 func ExecutorData(in string, promptConfig *lib.Prompt) {
-	if strings.HasPrefix(in, "exit") {
+	args := strings.Split(strings.TrimSpace(in), " ")
+	switch args[0] {
+	case "exit":
 		Exit()
-		return
+	case "connect":
+		upfDataConnect(args)
+	case "stats":
+		upfDataStats(args)
+	case "clear":
+		upfDataClear(args)
+	case "close":
+		upfDataClose(args)
+	case "help":
+		upfDataHelp(args)
+	default:
+		fmt.Println("ExcutorData: Unhandled command: ", in)
 	}
-	if strings.HasPrefix(in, "connect") {
-		upfDataConnect(in)
-		return
-	}
-
-	if strings.HasPrefix(in, "stats") {
-		upfDataStats(in)
-		return
-	}
-
-	if strings.HasPrefix(in, "clear") {
-		upfDataClear(in)
-		return
-	}
-
-	if strings.HasPrefix(in, "close") {
-		upfDataClose(in)
-		return
-	}
-
-	fmt.Println("ExcutorData: Unhandled Given: ", in)
 }
