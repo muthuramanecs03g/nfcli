@@ -2,7 +2,7 @@
 free5GC Network Function (NF) Command Line Interface (CLI) based on Thrift 
 
 ## Thrift Installation Steps
-1) Download Thrift 0.15.0
+1) Download [Thrift 0.15.0](https://downloads.apache.org/thrift/)
 2) ./bootstrap.sh
 3) ./configure --with-go --without-cpp  --with-boost=/usr/local --without-python --without-csharp --without-java --without-erlang --without-perl --without-php --without-php_extension --without-ruby --without-haskell
 4) Modify the following lines in lib/go/Makefile
@@ -19,7 +19,10 @@ free5GC Network Function (NF) Command Line Interface (CLI) based on Thrift
 8) thrift --version
     > Thrift version 0.15.0
 
-## NF Thrift Compilation
+## Get the Latest Source Code
+git clone https://github.com/muthuramanecs03g/nfcli.git
+
+## NF Thrift Service Compilation
 * cd nfcli 
 * thrift -r --gen go thrift/UpfService.thrift
 
