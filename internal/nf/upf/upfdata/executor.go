@@ -15,47 +15,87 @@ var ctx = context.Background()
 // connect --ipv4 10.20.0.10 --port 9090
 func upfDataConnect(cmd []string) {
 	l := len(cmd)
-	if l < 5 {
+	if l < 3 { // Minimum command lengths
+		fmt.Printf("upfDataConnect: %v\n", cmd)
 		return
 	}
 
+	var ipv4 string = ""
+	var port string = "9090"
 	// fmt.Println("upfDataConnect: ")
 	// for idx, str := range cmd {
 	// 	fmt.Printf("Idx: %d Str: %s\n", idx, str)
 	// }
-
-	connectClient(cmd[2], cmd[4])
+	for idx, str := range cmd {
+		switch str {
+		case "--ipv4", "-i":
+			ipv4 = cmd[idx+1]
+		case "--port", "-p":
+			port = cmd[idx+1]
+		default:
+			continue
+		}
+	}
+	// fmt.Println("upfDataConnect: Ip: ", ipv4, " Port: ", port)
+	if ipv4 != "" {
+		connectClient(ipv4, port)
+	}
 }
 
 func dumpPortStatistics(stats *Upf.PortStats) {
 	/* Rx Handler */
-	fmt.Println("Dump Rx Packet Count: ")
-	fmt.Println(stats.RxPktCnt)
-	fmt.Println("Dump Rx Packet Drop Count: ")
-	fmt.Println(stats.RxPktDropCnt)
-	/* Tx Handler*/
-	/* Non-Qfi */
-	fmt.Println("Tx NonQfi Packet Count: ", stats.TxNQfiPktCnt)
-	fmt.Println("Tx NonQfi Packet Drop Count: ", stats.TxNQfiPktDropCnt)
-	/* Dropper, WRED */
-	fmt.Println("Dump Dropper Packets: ")
+	fmt.Printf("--------------Rx Packet --------------\n")
+	fmt.Println("Count:")
+	fmt.Printf("\t%d\n", stats.RxPktCnt)
+	fmt.Println("Drop:")
+	fmt.Printf("\t%d\n", stats.RxPktDropCnt)
+	// TX Handler
+	// Non-Qfi
+	fmt.Printf("--------------Non-QFI Tx Packet --------------\n")
+	fmt.Println("Count:")
+	fmt.Printf("\t%d\n", stats.TxNQfiPktCnt)
+	fmt.Println("Drop:")
+	fmt.Printf("\t%d\n", stats.TxNQfiPktDropCnt)
+	// Dropper WRED
+	fmt.Printf("--------------Dropper WRED Packet --------------\n")
+	fmt.Println("Count:")
 	fmt.Println(stats.DropperPkts)
-	fmt.Println("Dump Dropper Packet Drop Count: ")
+	fmt.Println("Drop:")
 	fmt.Println(stats.DropperDrops)
 	/* Scheduler */
-	fmt.Println("Dump Scheduler Queue Drop Count: ")
+	fmt.Printf("--------------Scheduler Queue Drop --------------\n")
 	fmt.Println(stats.SchedulerQDropCnt)
 	/* DPDK Tx Queue */
-	fmt.Println("Dump Tx Packet Count: ")
-	fmt.Println(stats.TxPktCnt)
-	fmt.Println("Dump Tx Packet Drop Count: ")
-	fmt.Println(stats.TxPktDropCnt)
+	fmt.Printf("--------------DPDK Tx Packet --------------\n")
+	fmt.Println("Count:")
+	fmt.Printf("\t%d\n", stats.TxPktCnt)
+	fmt.Println("Drop:")
+	fmt.Printf("\t%d\n", stats.TxPktDropCnt)
+	fmt.Printf("==================================================\n")
+}
+
+func getPortStats(name, portStr, times string) {
+	port, err := lib.StringToInt32(portStr)
+	if err != nil {
+		fmt.Println("upfDataStats: Invalid port: ", portStr, " Times: ", times)
+		return
+	}
+
+	rsp, err := upfDataClient.upfDataConn.GetStats(ctx, port)
+	if err != nil {
+		fmt.Printf("upfDataStats: Thrift err: %v", err)
+		return
+	}
+	if rsp.Stats != nil {
+		fmt.Println(name + ": " + portStr)
+		dumpPortStatistics(rsp.Stats)
+	}
 }
 
 // stats --n3 1 --n6 2 --n9 3 --times 1
 func upfDataStats(cmd []string) {
 	l := len(cmd)
-	if l < 3 {
+	if l < 3 { // Minimum command length
 		return
 	}
 
@@ -74,27 +114,63 @@ func upfDataStats(cmd []string) {
 	// for idx, str := range split {
 	// 	fmt.Printf("Idx: %d Str: %s\n", idx, str)
 	// }
+	var n3 string = ""
+	var n6 string = ""
+	var n9 string = ""
+	var times string = "1"
+	for idx, str := range cmd {
+		next := idx + 1
+		switch str {
+		case "--n3":
+			if l > next {
+				n3 = cmd[next]
+			}
+		case "--n6":
+			if l > next {
+				n6 = cmd[next]
+			}
+		case "--n9":
+			if l > next {
+				n9 = cmd[next]
+			}
+		case "--times", "-t":
+			if l > next {
+				times = cmd[next]
+			}
+		default:
+			continue
+		}
+	}
 
-	port, err := lib.StringToInt32(cmd[2])
+	if n3 != "" {
+		getPortStats("N3", n3, times)
+	}
+	if n6 != "" {
+		getPortStats("N6", n6, times)
+	}
+	if n9 != "" {
+		getPortStats("N9", n9, times)
+	}
+}
+
+func clearPortStats(portStr string) {
+	port, err := lib.StringToInt32(portStr)
 	if err != nil {
-		fmt.Println("upfDataStats: Invalid port: ", cmd[2])
+		fmt.Println("upfDataStats: Invalid port: ", portStr)
 		return
 	}
 
-	rsp, err := upfDataClient.upfDataConn.GetStats(ctx, port)
+	err = upfDataClient.upfDataConn.ClearStats(ctx, port)
 	if err != nil {
 		fmt.Printf("upfDataStats: Thrift err: %v", err)
 		return
-	}
-	if rsp.Stats != nil {
-		dumpPortStatistics(rsp.Stats)
 	}
 }
 
 // clear --n3 1 --n6 2 --n9 3
 func upfDataClear(cmd []string) {
 	l := len(cmd)
-	if l < 3 {
+	if l < 3 { // Minimum command length
 		return
 	}
 
@@ -107,17 +183,37 @@ func upfDataClear(cmd []string) {
 	// for idx, str := range cmd {
 	// 	fmt.Printf("Idx: %d Str: %s\n", idx, str)
 	// }
-
-	port, err := lib.StringToInt32(cmd[2])
-	if err != nil {
-		fmt.Println("upfDataStats: Invalid port: ", cmd[2])
-		return
+	var n3 string = ""
+	var n6 string = ""
+	var n9 string = ""
+	for idx, str := range cmd {
+		next := idx + 1
+		switch str {
+		case "--n3":
+			if l > next {
+				n3 = cmd[next]
+			}
+		case "--n6":
+			if l > next {
+				n6 = cmd[next]
+			}
+		case "--n9":
+			if l > next {
+				n9 = cmd[next]
+			}
+		default:
+			continue
+		}
 	}
 
-	err = upfDataClient.upfDataConn.ClearStats(ctx, port)
-	if err != nil {
-		fmt.Printf("upfDataStats: Thrift err: %v", err)
-		return
+	if n3 != "" {
+		clearPortStats(n3)
+	}
+	if n6 != "" {
+		clearPortStats(n6)
+	}
+	if n9 != "" {
+		clearPortStats(n9)
 	}
 }
 
@@ -128,6 +224,18 @@ func upfDataClose(cmd []string) {
 		return
 	}
 	closeClient()
+}
+
+func upfDataStatus(cmd []string) {
+	if upfDataClient.upfDataConn == nil {
+		fmt.Println("upfDataStats: No connection exists")
+		return
+	}
+	if upfDataClient.getDataClientStatus() == true {
+		fmt.Println("upfDataStatus: Active")
+		return
+	}
+	fmt.Println("upfDataStatus: In-Active")
 }
 
 func upfDataHelp(cmd []string) {
@@ -174,6 +282,8 @@ func ExecutorData(in string, promptConfig *lib.Prompt) {
 		upfDataConnect(args)
 	case "stats":
 		upfDataStats(args)
+	case "status":
+		upfDataStatus(args)
 	case "clear":
 		upfDataClear(args)
 	case "close":

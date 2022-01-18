@@ -1,5 +1,4 @@
 package upf
 
 func Exit() {
-
 }

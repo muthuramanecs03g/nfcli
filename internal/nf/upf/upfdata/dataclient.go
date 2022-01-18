@@ -37,6 +37,7 @@ func connectClient(ipv4, port string) {
 	oprot := protocolFactory.GetProtocol(transport)
 
 	upfDataClient.upfDataConn = Upf.NewUpfServiceClient(thrift.NewTStandardClient(iprot, oprot))
+	fmt.Println("Connected")
 }
 
 func closeClient() {
@@ -46,4 +47,5 @@ func closeClient() {
 		}
 		upfDataClient.upfDataConn = nil
 	}
+	fmt.Println("Dis-Connected")
 }

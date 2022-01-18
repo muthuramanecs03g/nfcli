@@ -19,6 +19,10 @@ func init() {
 	}
 }
 
+func (u *upfData) getDataClientStatus() bool {
+	return u.transport.IsOpen()
+}
+
 func Exit() {
 	if upfDataClient != nil && upfDataClient.upfDataConn != nil {
 		if upfDataClient.transport.IsOpen() == true {

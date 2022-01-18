@@ -14,6 +14,8 @@ var UpfDataSuggestion = []prompt.Suggest{
 	{Text: "close", Description: "Close the currently connected UPF data plane"},
 	{Text: "status", Description: "Status the currently connected UPF data plane"},
 	{Text: "list", Description: "List of connected UPF data plane"},
+	{Text: "uplink", Description: "UPF data plane uplink rules"},
+	{Text: "downlink", Description: "UPF data plane uplink rules"},
 	{Text: "log", Description: "Log the statistics report"},
 	{Text: "help", Description: "List of UPF data plane commands"},
 	{Text: "exit", Description: "Exit the UPF data plane"},
@@ -39,6 +41,7 @@ var statsOptions = []prompt.Suggest{
 	prompt.Suggest{Text: "--n6", Description: "UPF data plane N6 port number"},
 	prompt.Suggest{Text: "--n9", Description: "UPF data plane N9 port number"},
 	prompt.Suggest{Text: "--times", Description: "Number of times query the stats per sec(default 1)"},
+	prompt.Suggest{Text: "-t", Description: "Number of times query the stats per sec(default 1)"},
 }
 
 var clearOptions = []prompt.Suggest{
@@ -49,22 +52,48 @@ var clearOptions = []prompt.Suggest{
 
 var closeOptions = []prompt.Suggest{
 	prompt.Suggest{Text: "--id", Description: "Identifier of UPF data plane to be close"},
+	prompt.Suggest{Text: "-i", Description: "Identifier of UPF data plane to be close"},
 	prompt.Suggest{Text: "--all", Description: "Close all connected UPF data plane"},
 	prompt.Suggest{Text: "-a", Description: "Close all connected UPF data plane"},
 }
 
 var statusOptions = []prompt.Suggest{
 	prompt.Suggest{Text: "--id", Description: "Identfier of UPF data plane Thrfit server"},
+	prompt.Suggest{Text: "-i", Description: "Identfier of UPF data plane Thrfit server"},
 	prompt.Suggest{Text: "--start", Description: "Starting index of UPD data plane Thrfit server"},
+	prompt.Suggest{Text: "-s", Description: "Starting index of UPD data plane Thrfit server"},
 	prompt.Suggest{Text: "--count", Description: "Number of UPF data plane Thrfit server status to be display"},
+	prompt.Suggest{Text: "-c", Description: "Number of UPF data plane Thrfit server status to be display"},
+	prompt.Suggest{Text: "--all", Description: "List of connected UPF data plane Thrift sever"},
+	prompt.Suggest{Text: "-a", Description: "List of connected UPF data plane Thrift sever"},
 }
 
 var listOptions = []prompt.Suggest{
 	prompt.Suggest{Text: "--count", Description: "Number of UPF data plane Thrfit server to be display"},
+	prompt.Suggest{Text: "-c", Description: "Number of UPF data plane Thrfit server to be display"},
 }
 
 var logOptions = []prompt.Suggest{
-	prompt.Suggest{Text: "--write", Description: "Number of UPF data plane Thrfit server status"},
+	prompt.Suggest{Text: "--write", Description: "Write port statistics report on file"},
+	prompt.Suggest{Text: "-w", Description: "Write port statistics report on file"},
+}
+
+var uplinkFlowOptions = []prompt.Suggest{
+	prompt.Suggest{Text: "--id", Description: "Identfier of UPF data plane Thrfit server"},
+	prompt.Suggest{Text: "--all", Description: "List all uplink flow rules"},
+	prompt.Suggest{Text: "--add", Description: "Add a new link uplink fow rules"},
+	prompt.Suggest{Text: "--del", Description: "Delete a new link uplink fow rules"},
+	prompt.Suggest{Text: "--session", Description: "Number of Tunnel session established"},
+	prompt.Suggest{Text: "--input", Description: "Read rule information from text file"},
+}
+
+var downlinkFlowOptions = []prompt.Suggest{
+	prompt.Suggest{Text: "--id", Description: "Identfier of UPF data plane Thrfit server"},
+	prompt.Suggest{Text: "--all", Description: "List all uplink flow rules"},
+	prompt.Suggest{Text: "--add", Description: "Add a new link uplink fow rules"},
+	prompt.Suggest{Text: "--del", Description: "Delete a new link uplink fow rules"},
+	prompt.Suggest{Text: "--session", Description: "Number of Tunnel session established"},
+	prompt.Suggest{Text: "--input", Description: "Read rule information from text file"},
 }
 
 func excludeOptions(args []string) ([]string, bool) {
@@ -134,6 +163,10 @@ func optionCompleter(args []string, long bool) []prompt.Suggest {
 		suggests = statusOptions
 	case "list":
 		suggests = listOptions
+	case "uplink":
+		suggests = uplinkFlowOptions
+	case "downlink":
+		suggests = downlinkFlowOptions
 	case "log":
 		suggests = logOptions
 	default:
