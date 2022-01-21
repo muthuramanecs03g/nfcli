@@ -45,32 +45,24 @@ func upfDataConnect(cmd []string) {
 func dumpPortStatistics(stats *Upf.PortStats) {
 	/* Rx Handler */
 	fmt.Printf("--------------Rx Packet --------------\n")
-	fmt.Println("Count:")
-	fmt.Printf("\t%d\n", stats.RxPktCnt)
-	fmt.Println("Drop:")
-	fmt.Printf("\t%d\n", stats.RxPktDropCnt)
+	fmt.Printf("Count: %v\n", stats.RxPktCnt)
+	fmt.Printf("Drop: %v\n", stats.RxPktDropCnt)
 	// TX Handler
 	// Non-Qfi
 	fmt.Printf("--------------Non-QFI Tx Packet --------------\n")
-	fmt.Println("Count:")
-	fmt.Printf("\t%d\n", stats.TxNQfiPktCnt)
-	fmt.Println("Drop:")
-	fmt.Printf("\t%d\n", stats.TxNQfiPktDropCnt)
+	fmt.Printf("Count: %d\n", stats.TxNQfiPktCnt)
+	fmt.Printf("Drop: %d\n", stats.TxNQfiPktDropCnt)
 	// Dropper WRED
 	fmt.Printf("--------------Dropper WRED Packet --------------\n")
-	fmt.Println("Count:")
-	fmt.Println(stats.DropperPkts)
-	fmt.Println("Drop:")
-	fmt.Println(stats.DropperDrops)
+	fmt.Printf("Count: %v\n", stats.DropperPkts)
+	fmt.Printf("Drop: %v\n", stats.DropperDrops)
 	/* Scheduler */
 	fmt.Printf("--------------Scheduler Queue Drop --------------\n")
-	fmt.Println(stats.SchedulerQDropCnt)
+	fmt.Printf("Drop: %v\n", stats.SchedulerQDropCnt)
 	/* DPDK Tx Queue */
 	fmt.Printf("--------------DPDK Tx Packet --------------\n")
-	fmt.Println("Count:")
-	fmt.Printf("\t%d\n", stats.TxPktCnt)
-	fmt.Println("Drop:")
-	fmt.Printf("\t%d\n", stats.TxPktDropCnt)
+	fmt.Printf("Count: %v\n", stats.TxPktCnt)
+	fmt.Printf("Drop: %v\n", stats.TxPktDropCnt)
 	fmt.Printf("==================================================\n")
 }
 
