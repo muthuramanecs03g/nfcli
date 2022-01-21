@@ -1387,11 +1387,11 @@ func (p *QerInfo) String() string {
 // Attributes:
 //  - ErrCode
 //  - ErrMsg
-//  - Far
+//  - Qer
 type GetQerResponse struct {
   ErrCode int32 `thrift:"errCode,1,required" db:"errCode" json:"errCode"`
   ErrMsg string `thrift:"errMsg,2,required" db:"errMsg" json:"errMsg"`
-  Far *FarInfo `thrift:"far,3,required" db:"far" json:"far"`
+  Qer *QerInfo `thrift:"qer,3,required" db:"qer" json:"qer"`
 }
 
 func NewGetQerResponse() *GetQerResponse {
@@ -1406,15 +1406,15 @@ func (p *GetQerResponse) GetErrCode() int32 {
 func (p *GetQerResponse) GetErrMsg() string {
   return p.ErrMsg
 }
-var GetQerResponse_Far_DEFAULT *FarInfo
-func (p *GetQerResponse) GetFar() *FarInfo {
-  if !p.IsSetFar() {
-    return GetQerResponse_Far_DEFAULT
+var GetQerResponse_Qer_DEFAULT *QerInfo
+func (p *GetQerResponse) GetQer() *QerInfo {
+  if !p.IsSetQer() {
+    return GetQerResponse_Qer_DEFAULT
   }
-return p.Far
+return p.Qer
 }
-func (p *GetQerResponse) IsSetFar() bool {
-  return p.Far != nil
+func (p *GetQerResponse) IsSetQer() bool {
+  return p.Qer != nil
 }
 
 func (p *GetQerResponse) Read(ctx context.Context, iprot thrift.TProtocol) error {
@@ -1424,7 +1424,7 @@ func (p *GetQerResponse) Read(ctx context.Context, iprot thrift.TProtocol) error
 
   var issetErrCode bool = false;
   var issetErrMsg bool = false;
-  var issetFar bool = false;
+  var issetQer bool = false;
 
   for {
     _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin(ctx)
@@ -1460,7 +1460,7 @@ func (p *GetQerResponse) Read(ctx context.Context, iprot thrift.TProtocol) error
         if err := p.ReadField3(ctx, iprot); err != nil {
           return err
         }
-        issetFar = true
+        issetQer = true
       } else {
         if err := iprot.Skip(ctx, fieldTypeId); err != nil {
           return err
@@ -1484,8 +1484,8 @@ func (p *GetQerResponse) Read(ctx context.Context, iprot thrift.TProtocol) error
   if !issetErrMsg{
     return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field ErrMsg is not set"));
   }
-  if !issetFar{
-    return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Far is not set"));
+  if !issetQer{
+    return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Qer is not set"));
   }
   return nil
 }
@@ -1509,9 +1509,9 @@ func (p *GetQerResponse)  ReadField2(ctx context.Context, iprot thrift.TProtocol
 }
 
 func (p *GetQerResponse)  ReadField3(ctx context.Context, iprot thrift.TProtocol) error {
-  p.Far = &FarInfo{}
-  if err := p.Far.Read(ctx, iprot); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Far), err)
+  p.Qer = &QerInfo{}
+  if err := p.Qer.Read(ctx, iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Qer), err)
   }
   return nil
 }
@@ -1552,13 +1552,13 @@ func (p *GetQerResponse) writeField2(ctx context.Context, oprot thrift.TProtocol
 }
 
 func (p *GetQerResponse) writeField3(ctx context.Context, oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin(ctx, "far", thrift.STRUCT, 3); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:far: ", p), err) }
-  if err := p.Far.Write(ctx, oprot); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Far), err)
+  if err := oprot.WriteFieldBegin(ctx, "qer", thrift.STRUCT, 3); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:qer: ", p), err) }
+  if err := p.Qer.Write(ctx, oprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Qer), err)
   }
   if err := oprot.WriteFieldEnd(ctx); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write field end error 3:far: ", p), err) }
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 3:qer: ", p), err) }
   return err
 }
 
@@ -1570,7 +1570,7 @@ func (p *GetQerResponse) Equals(other *GetQerResponse) bool {
   }
   if p.ErrCode != other.ErrCode { return false }
   if p.ErrMsg != other.ErrMsg { return false }
-  if !p.Far.Equals(other.Far) { return false }
+  if !p.Qer.Equals(other.Qer) { return false }
   return true
 }
 

@@ -9,6 +9,9 @@ import (
 	"github.com/muthuramanecs03g/nfcli/gen-go/UpfGtp5g"
 )
 
+type Gtp5gThriftServer struct {
+}
+
 func Usage() {
 	fmt.Fprint(os.Stderr, "Usage of ", os.Args[0], ":\n")
 	fmt.Fprint(os.Stderr, "\n")
@@ -62,8 +65,7 @@ func main() {
 	}
 
 	// processor
-	handler := &Gtp5gThriftServer{}
-	processor := UpfGtp5g.NewUpfGtp5gServiceProcessor(handler)
+	processor := UpfGtp5g.NewUpfGtp5gServiceProcessor(&Gtp5gThriftServer{})
 
 	fmt.Printf("Run: Starting the Thrift server... on %s\n", *addr)
 	// start tcp server

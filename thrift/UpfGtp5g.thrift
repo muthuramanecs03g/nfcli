@@ -42,7 +42,7 @@ struct QerInfo {
 struct GetQerResponse {
     1:required i32 errCode; 
     2:required string errMsg;
-    3:required FarInfo far;
+    3:required QerInfo qer;
 }
 
 service UpfGtp5gService {
