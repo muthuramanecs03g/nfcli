@@ -3,6 +3,7 @@ package upfdata
 import (
 	"context"
 	"fmt"
+	"time"
 	"strings"
 
 	"github.com/muthuramanecs03g/nfcli/gen-go/Upf"
@@ -134,14 +135,21 @@ func upfDataStats(cmd []string) {
 		}
 	}
 
-	if n3 != "" {
-		getPortStats("N3", n3, times)
+	count, err := lib.StringToInt32(times)
+	if err != nil {
+		count = 1
 	}
-	if n6 != "" {
-		getPortStats("N6", n6, times)
-	}
-	if n9 != "" {
-		getPortStats("N9", n9, times)
+	for i := 0; i < int(count); i++ {
+		if n3 != "" {
+			getPortStats("N3", n3, times)
+		}
+		if n6 != "" {
+			getPortStats("N6", n6, times)
+		}
+		if n9 != "" {
+			getPortStats("N9", n9, times)
+		}
+		time.Sleep(1 * time.Second)
 	}
 }
 
