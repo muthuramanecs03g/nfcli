@@ -10,6 +10,7 @@ struct PortStats {
 	7:required list<list<i32>> dropperPkts;
 	8:required list<list<i32>> dropperDrops;
 	9:required list<i32> schedulerQDropCnt;
+    10:required i32 nffGoSchedulerDropCnt;
 }
 
 struct StatsResponse {

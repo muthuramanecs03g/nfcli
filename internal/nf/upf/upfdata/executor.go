@@ -3,8 +3,8 @@ package upfdata
 import (
 	"context"
 	"fmt"
-	"time"
 	"strings"
+	"time"
 
 	"github.com/muthuramanecs03g/nfcli/gen-go/Upf"
 	"github.com/muthuramanecs03g/nfcli/lib"
@@ -48,7 +48,12 @@ func dumpPortStatistics(stats *Upf.PortStats) {
 	fmt.Printf("--------------Rx Packet --------------\n")
 	fmt.Printf("Count: %v\n", stats.RxPktCnt)
 	fmt.Printf("Drop: %v\n", stats.RxPktDropCnt)
-	// TX Handler
+
+	/* NFF-GO scheduler */
+	fmt.Printf("--------------NFF-GO Packet --------------\n")
+	fmt.Printf("Drop: %v\n", stats.NffGoSchedulerDropCnt)
+
+	/* TX Handler */
 	// Non-Qfi
 	fmt.Printf("--------------Non-QFI Tx Packet --------------\n")
 	fmt.Printf("Count: %d\n", stats.TxNQfiPktCnt)
