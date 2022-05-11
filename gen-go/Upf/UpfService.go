@@ -28,6 +28,7 @@ var _ = bytes.Equal
 //  - DropperDrops
 //  - SchedulerQDropCnt
 //  - NffGoSchedulerDropCnt
+//  - ClassifierDropCnt
 type PortStats struct {
   RxPktCnt []int32 `thrift:"rxPktCnt,1,required" db:"rxPktCnt" json:"rxPktCnt"`
   RxPktDropCnt []int32 `thrift:"rxPktDropCnt,2,required" db:"rxPktDropCnt" json:"rxPktDropCnt"`
@@ -39,6 +40,7 @@ type PortStats struct {
   DropperDrops [][]int32 `thrift:"dropperDrops,8,required" db:"dropperDrops" json:"dropperDrops"`
   SchedulerQDropCnt []int32 `thrift:"schedulerQDropCnt,9,required" db:"schedulerQDropCnt" json:"schedulerQDropCnt"`
   NffGoSchedulerDropCnt int32 `thrift:"nffGoSchedulerDropCnt,10,required" db:"nffGoSchedulerDropCnt" json:"nffGoSchedulerDropCnt"`
+  ClassifierDropCnt int32 `thrift:"classifierDropCnt,11,required" db:"classifierDropCnt" json:"classifierDropCnt"`
 }
 
 func NewPortStats() *PortStats {
@@ -85,6 +87,10 @@ func (p *PortStats) GetSchedulerQDropCnt() []int32 {
 func (p *PortStats) GetNffGoSchedulerDropCnt() int32 {
   return p.NffGoSchedulerDropCnt
 }
+
+func (p *PortStats) GetClassifierDropCnt() int32 {
+  return p.ClassifierDropCnt
+}
 func (p *PortStats) Read(ctx context.Context, iprot thrift.TProtocol) error {
   if _, err := iprot.ReadStructBegin(ctx); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
@@ -100,6 +106,7 @@ func (p *PortStats) Read(ctx context.Context, iprot thrift.TProtocol) error {
   var issetDropperDrops bool = false;
   var issetSchedulerQDropCnt bool = false;
   var issetNffGoSchedulerDropCnt bool = false;
+  var issetClassifierDropCnt bool = false;
 
   for {
     _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin(ctx)
@@ -218,6 +225,17 @@ func (p *PortStats) Read(ctx context.Context, iprot thrift.TProtocol) error {
           return err
         }
       }
+    case 11:
+      if fieldTypeId == thrift.I32 {
+        if err := p.ReadField11(ctx, iprot); err != nil {
+          return err
+        }
+        issetClassifierDropCnt = true
+      } else {
+        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+          return err
+        }
+      }
     default:
       if err := iprot.Skip(ctx, fieldTypeId); err != nil {
         return err
@@ -259,6 +277,9 @@ func (p *PortStats) Read(ctx context.Context, iprot thrift.TProtocol) error {
   }
   if !issetNffGoSchedulerDropCnt{
     return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field NffGoSchedulerDropCnt is not set"));
+  }
+  if !issetClassifierDropCnt{
+    return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field ClassifierDropCnt is not set"));
   }
   return nil
 }
@@ -468,6 +489,15 @@ func (p *PortStats)  ReadField10(ctx context.Context, iprot thrift.TProtocol) er
   return nil
 }
 
+func (p *PortStats)  ReadField11(ctx context.Context, iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI32(ctx); err != nil {
+  return thrift.PrependError("error reading field 11: ", err)
+} else {
+  p.ClassifierDropCnt = v
+}
+  return nil
+}
+
 func (p *PortStats) Write(ctx context.Context, oprot thrift.TProtocol) error {
   if err := oprot.WriteStructBegin(ctx, "PortStats"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
@@ -482,6 +512,7 @@ func (p *PortStats) Write(ctx context.Context, oprot thrift.TProtocol) error {
     if err := p.writeField8(ctx, oprot); err != nil { return err }
     if err := p.writeField9(ctx, oprot); err != nil { return err }
     if err := p.writeField10(ctx, oprot); err != nil { return err }
+    if err := p.writeField11(ctx, oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(ctx); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -662,6 +693,16 @@ func (p *PortStats) writeField10(ctx context.Context, oprot thrift.TProtocol) (e
   return err
 }
 
+func (p *PortStats) writeField11(ctx context.Context, oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin(ctx, "classifierDropCnt", thrift.I32, 11); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 11:classifierDropCnt: ", p), err) }
+  if err := oprot.WriteI32(ctx, int32(p.ClassifierDropCnt)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.classifierDropCnt (11) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 11:classifierDropCnt: ", p), err) }
+  return err
+}
+
 func (p *PortStats) Equals(other *PortStats) bool {
   if p == other {
     return true
@@ -714,6 +755,7 @@ func (p *PortStats) Equals(other *PortStats) bool {
     if _tgt != _src17 { return false }
   }
   if p.NffGoSchedulerDropCnt != other.NffGoSchedulerDropCnt { return false }
+  if p.ClassifierDropCnt != other.ClassifierDropCnt { return false }
   return true
 }
 
