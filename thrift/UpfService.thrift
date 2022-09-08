@@ -12,6 +12,7 @@ struct PortStats {
 	9:required list<i32> schedulerQDropCnt;
     10:required i32 nffGoSchedulerDropCnt;
     11:required i32 classifierDropCnt;
+    12:required i32 workerDropCnt;
 }
 
 struct StatsResponse {

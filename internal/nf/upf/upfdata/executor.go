@@ -53,6 +53,7 @@ func dumpPortStatistics(stats *Upf.PortStats) {
 	fmt.Printf("--------------NFF-GO Packet --------------\n")
 	fmt.Printf("Scheduler Drop: %v\n", stats.NffGoSchedulerDropCnt)
 	fmt.Printf("Classifier Drop: %v\n", stats.ClassifierDropCnt)
+	fmt.Printf("Worker Drop: %v\n", stats.WorkerDropCnt)
 
 	/* TX Handler */
 	// Non-Qfi
