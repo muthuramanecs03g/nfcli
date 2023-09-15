@@ -28,4 +28,10 @@ service UpfService {
     void ClearStats(
         1:required i32 port
     )
+    void PcapStart(
+       1:required i32 port
+    )
+    void PcapStop(
+       1:required i32 port
+    )
 }

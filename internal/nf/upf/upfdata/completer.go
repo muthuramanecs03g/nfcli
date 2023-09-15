@@ -17,6 +17,7 @@ var UpfDataSuggestion = []prompt.Suggest{
 	{Text: "uplink", Description: "UPF data plane uplink rules"},
 	{Text: "downlink", Description: "UPF data plane uplink rules"},
 	{Text: "log", Description: "Log the statistics report"},
+	{Text: "pcap", Description: "Start/Stop packet capture on port"},
 	{Text: "help", Description: "List of UPF data plane commands"},
 	{Text: "exit", Description: "Exit the UPF data plane"},
 }
@@ -96,6 +97,12 @@ var downlinkFlowOptions = []prompt.Suggest{
 	prompt.Suggest{Text: "--input", Description: "Read rule information from text file"},
 }
 
+var pcapOptions = []prompt.Suggest{
+	prompt.Suggest{Text: "--port", Description: "DPDK port number of n3/n6/n9"},
+	prompt.Suggest{Text: "--start", Description: "Start port capture"},
+	prompt.Suggest{Text: "--stop", Description: "Stop port capture"},
+}
+
 func excludeOptions(args []string) ([]string, bool) {
 	l := len(args)
 	if l == 0 {
@@ -167,6 +174,8 @@ func optionCompleter(args []string, long bool) []prompt.Suggest {
 		suggests = uplinkFlowOptions
 	case "downlink":
 		suggests = downlinkFlowOptions
+	case "pcap":
+		suggests = pcapOptions
 	case "log":
 		suggests = logOptions
 	default:

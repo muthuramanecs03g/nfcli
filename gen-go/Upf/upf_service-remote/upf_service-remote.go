@@ -24,6 +24,8 @@ func Usage() {
   fmt.Fprintln(os.Stderr, "\nFunctions:")
   fmt.Fprintln(os.Stderr, "  StatsResponse GetStats(i32 port)")
   fmt.Fprintln(os.Stderr, "  void ClearStats(i32 port)")
+  fmt.Fprintln(os.Stderr, "  void PcapStart(i32 port)")
+  fmt.Fprintln(os.Stderr, "  void PcapStop(i32 port)")
   fmt.Fprintln(os.Stderr)
   os.Exit(0)
 }
@@ -151,8 +153,8 @@ func main() {
       fmt.Fprintln(os.Stderr, "GetStats requires 1 args")
       flag.Usage()
     }
-    tmp0, err27 := (strconv.Atoi(flag.Arg(1)))
-    if err27 != nil {
+    tmp0, err33 := (strconv.Atoi(flag.Arg(1)))
+    if err33 != nil {
       Usage()
       return
     }
@@ -166,14 +168,44 @@ func main() {
       fmt.Fprintln(os.Stderr, "ClearStats requires 1 args")
       flag.Usage()
     }
-    tmp0, err28 := (strconv.Atoi(flag.Arg(1)))
-    if err28 != nil {
+    tmp0, err34 := (strconv.Atoi(flag.Arg(1)))
+    if err34 != nil {
       Usage()
       return
     }
     argvalue0 := int32(tmp0)
     value0 := argvalue0
     fmt.Print(client.ClearStats(context.Background(), value0))
+    fmt.Print("\n")
+    break
+  case "PcapStart":
+    if flag.NArg() - 1 != 1 {
+      fmt.Fprintln(os.Stderr, "PcapStart requires 1 args")
+      flag.Usage()
+    }
+    tmp0, err35 := (strconv.Atoi(flag.Arg(1)))
+    if err35 != nil {
+      Usage()
+      return
+    }
+    argvalue0 := int32(tmp0)
+    value0 := argvalue0
+    fmt.Print(client.PcapStart(context.Background(), value0))
+    fmt.Print("\n")
+    break
+  case "PcapStop":
+    if flag.NArg() - 1 != 1 {
+      fmt.Fprintln(os.Stderr, "PcapStop requires 1 args")
+      flag.Usage()
+    }
+    tmp0, err36 := (strconv.Atoi(flag.Arg(1)))
+    if err36 != nil {
+      Usage()
+      return
+    }
+    argvalue0 := int32(tmp0)
+    value0 := argvalue0
+    fmt.Print(client.PcapStop(context.Background(), value0))
     fmt.Print("\n")
     break
   case "":

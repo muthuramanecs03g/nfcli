@@ -77,13 +77,13 @@ func dumpPortStatistics(stats *Upf.PortStats) {
 func getPortStats(name, portStr, times string) {
 	port, err := lib.StringToInt32(portStr)
 	if err != nil {
-		fmt.Println("upfDataStats: Invalid port: ", portStr, " Times: ", times)
+		fmt.Println("getPortStats: Invalid port: ", portStr, " Times: ", times)
 		return
 	}
 
 	rsp, err := upfDataClient.upfDataConn.GetStats(ctx, port)
 	if err != nil {
-		fmt.Printf("upfDataStats: Thrift err: %v", err)
+		fmt.Printf("getPortStats: Thrift err: %v", err)
 		return
 	}
 	if rsp.Stats != nil {
@@ -163,13 +163,13 @@ func upfDataStats(cmd []string) {
 func clearPortStats(portStr string) {
 	port, err := lib.StringToInt32(portStr)
 	if err != nil {
-		fmt.Println("upfDataStats: Invalid port: ", portStr)
+		fmt.Println("clearPortStats: Invalid port: ", portStr)
 		return
 	}
 
 	err = upfDataClient.upfDataConn.ClearStats(ctx, port)
 	if err != nil {
-		fmt.Printf("upfDataStats: Thrift err: %v", err)
+		fmt.Printf("clearPortStats: Thrift err: %v", err)
 		return
 	}
 }
@@ -182,7 +182,7 @@ func upfDataClear(cmd []string) {
 	}
 
 	if upfDataClient.upfDataConn == nil {
-		fmt.Println("upfDataStats: No connection exists, try connect again")
+		fmt.Println("upfDataClear: No connection exists, try connect again")
 		return
 	}
 
@@ -227,15 +227,70 @@ func upfDataClear(cmd []string) {
 // close
 func upfDataClose(cmd []string) {
 	if upfDataClient.upfDataConn == nil {
-		fmt.Println("upfDataStats: No connection exists")
+		fmt.Println("upfDataClose: No connection exists")
 		return
 	}
 	closeClient()
 }
 
+// pcap --pid 1 --start|--stop
+func upfDataPcap(cmd []string) {
+	l := len(cmd)
+	if l < 4 { // Minimum command length
+		return
+	}
+
+	if upfDataClient.upfDataConn == nil {
+		fmt.Println("upfDataPcap: No connection exists, try connect again")
+		fmt.Printf("upfDataPcap: Given cmd: %v\n", cmd)
+		return
+	}
+
+	var op int = 0
+	var portIds string = ""
+	for idx, str := range cmd {
+		next := idx + 1
+		switch str {
+		case "--start":
+			op = 1
+		case "--stop":
+			op = 2
+		case "--pid":
+			if l > next {
+				portIds = cmd[next]
+			}
+		default:
+			continue
+		}
+	}
+
+	port, err := lib.StringToInt32(portIds)
+	if err != nil {
+		fmt.Println("upfDataPcap: Invalid port: ", portIds)
+		return
+	}
+
+	switch op {
+	case 1: // start
+		err = upfDataClient.upfDataConn.PcapStart(ctx, port)
+		if err != nil {
+			fmt.Printf("upfDataPcap: Thrift err: %v", err)
+			return
+		}
+	case 2: // stop
+		err = upfDataClient.upfDataConn.PcapStop(ctx, port)
+		if err != nil {
+			fmt.Printf("upfDataPcap: Thrift err: %v", err)
+			return
+		}
+	default:
+		fmt.Println("upfDataPcap: Unknown op: ", op)
+	}
+}
+
 func upfDataStatus(cmd []string) {
 	if upfDataClient.upfDataConn == nil {
-		fmt.Println("upfDataStats: No connection exists")
+		fmt.Println("upfDataStatus: No connection exists")
 		return
 	}
 	if upfDataClient.getDataClientStatus() == true {
@@ -272,6 +327,9 @@ func upfDataHelp(cmd []string) {
 	case "log":
 		fmt.Println("Description: Log the port statistics report")
 		fmt.Println("Usage: log --write filename.txt")
+	case "pcap":
+		fmt.Println("Description: Packet capture on port")
+		fmt.Println("Usage: pcap --pid 0x3 --start")
 	case "exit":
 		fmt.Println("Description: Exit from the UPF data plane")
 		fmt.Println("Usage: exit")
@@ -297,6 +355,8 @@ func ExecutorData(in string, promptConfig *lib.Prompt) {
 		upfDataClose(args)
 	case "help":
 		upfDataHelp(args)
+	case "pcap":
+		upfDataPcap(args)
 	default:
 		fmt.Println("ExcutorData: Unhandled command: ", in)
 	}

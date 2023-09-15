@@ -1012,6 +1012,12 @@ type UpfService interface {
   // Parameters:
   //  - Port
   ClearStats(ctx context.Context, port int32) (_err error)
+  // Parameters:
+  //  - Port
+  PcapStart(ctx context.Context, port int32) (_err error)
+  // Parameters:
+  //  - Port
+  PcapStop(ctx context.Context, port int32) (_err error)
 }
 
 type UpfServiceClient struct {
@@ -1082,6 +1088,36 @@ func (p *UpfServiceClient) ClearStats(ctx context.Context, port int32) (_err err
   return nil
 }
 
+// Parameters:
+//  - Port
+func (p *UpfServiceClient) PcapStart(ctx context.Context, port int32) (_err error) {
+  var _args25 UpfServicePcapStartArgs
+  _args25.Port = port
+  var _result27 UpfServicePcapStartResult
+  var _meta26 thrift.ResponseMeta
+  _meta26, _err = p.Client_().Call(ctx, "PcapStart", &_args25, &_result27)
+  p.SetLastResponseMeta_(_meta26)
+  if _err != nil {
+    return
+  }
+  return nil
+}
+
+// Parameters:
+//  - Port
+func (p *UpfServiceClient) PcapStop(ctx context.Context, port int32) (_err error) {
+  var _args28 UpfServicePcapStopArgs
+  _args28.Port = port
+  var _result30 UpfServicePcapStopResult
+  var _meta29 thrift.ResponseMeta
+  _meta29, _err = p.Client_().Call(ctx, "PcapStop", &_args28, &_result30)
+  p.SetLastResponseMeta_(_meta29)
+  if _err != nil {
+    return
+  }
+  return nil
+}
+
 type UpfServiceProcessor struct {
   processorMap map[string]thrift.TProcessorFunction
   handler UpfService
@@ -1102,10 +1138,12 @@ func (p *UpfServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFunctio
 
 func NewUpfServiceProcessor(handler UpfService) *UpfServiceProcessor {
 
-  self25 := &UpfServiceProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
-  self25.processorMap["GetStats"] = &upfServiceProcessorGetStats{handler:handler}
-  self25.processorMap["ClearStats"] = &upfServiceProcessorClearStats{handler:handler}
-return self25
+  self31 := &UpfServiceProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
+  self31.processorMap["GetStats"] = &upfServiceProcessorGetStats{handler:handler}
+  self31.processorMap["ClearStats"] = &upfServiceProcessorClearStats{handler:handler}
+  self31.processorMap["PcapStart"] = &upfServiceProcessorPcapStart{handler:handler}
+  self31.processorMap["PcapStop"] = &upfServiceProcessorPcapStop{handler:handler}
+return self31
 }
 
 func (p *UpfServiceProcessor) Process(ctx context.Context, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -1116,12 +1154,12 @@ func (p *UpfServiceProcessor) Process(ctx context.Context, iprot, oprot thrift.T
   }
   iprot.Skip(ctx, thrift.STRUCT)
   iprot.ReadMessageEnd(ctx)
-  x26 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
+  x32 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
   oprot.WriteMessageBegin(ctx, name, thrift.EXCEPTION, seqId)
-  x26.Write(ctx, oprot)
+  x32.Write(ctx, oprot)
   oprot.WriteMessageEnd(ctx)
   oprot.Flush(ctx)
-  return false, x26
+  return false, x32
 
 }
 
@@ -1263,6 +1301,158 @@ func (p *upfServiceProcessorClearStats) Process(ctx context.Context, seqId int32
   }
   tickerCancel()
   if err2 = oprot.WriteMessageBegin(ctx, "ClearStats", thrift.REPLY, seqId); err2 != nil {
+    err = thrift.WrapTException(err2)
+  }
+  if err2 = result.Write(ctx, oprot); err == nil && err2 != nil {
+    err = thrift.WrapTException(err2)
+  }
+  if err2 = oprot.WriteMessageEnd(ctx); err == nil && err2 != nil {
+    err = thrift.WrapTException(err2)
+  }
+  if err2 = oprot.Flush(ctx); err == nil && err2 != nil {
+    err = thrift.WrapTException(err2)
+  }
+  if err != nil {
+    return
+  }
+  return true, err
+}
+
+type upfServiceProcessorPcapStart struct {
+  handler UpfService
+}
+
+func (p *upfServiceProcessorPcapStart) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+  args := UpfServicePcapStartArgs{}
+  var err2 error
+  if err2 = args.Read(ctx, iprot); err2 != nil {
+    iprot.ReadMessageEnd(ctx)
+    x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err2.Error())
+    oprot.WriteMessageBegin(ctx, "PcapStart", thrift.EXCEPTION, seqId)
+    x.Write(ctx, oprot)
+    oprot.WriteMessageEnd(ctx)
+    oprot.Flush(ctx)
+    return false, thrift.WrapTException(err2)
+  }
+  iprot.ReadMessageEnd(ctx)
+
+  tickerCancel := func() {}
+  // Start a goroutine to do server side connectivity check.
+  if thrift.ServerConnectivityCheckInterval > 0 {
+    var cancel context.CancelFunc
+    ctx, cancel = context.WithCancel(ctx)
+    defer cancel()
+    var tickerCtx context.Context
+    tickerCtx, tickerCancel = context.WithCancel(context.Background())
+    defer tickerCancel()
+    go func(ctx context.Context, cancel context.CancelFunc) {
+      ticker := time.NewTicker(thrift.ServerConnectivityCheckInterval)
+      defer ticker.Stop()
+      for {
+        select {
+        case <-ctx.Done():
+          return
+        case <-ticker.C:
+          if !iprot.Transport().IsOpen() {
+            cancel()
+            return
+          }
+        }
+      }
+    }(tickerCtx, cancel)
+  }
+
+  result := UpfServicePcapStartResult{}
+  if err2 = p.handler.PcapStart(ctx, args.Port); err2 != nil {
+    tickerCancel()
+    if err2 == thrift.ErrAbandonRequest {
+      return false, thrift.WrapTException(err2)
+    }
+    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing PcapStart: " + err2.Error())
+    oprot.WriteMessageBegin(ctx, "PcapStart", thrift.EXCEPTION, seqId)
+    x.Write(ctx, oprot)
+    oprot.WriteMessageEnd(ctx)
+    oprot.Flush(ctx)
+    return true, thrift.WrapTException(err2)
+  }
+  tickerCancel()
+  if err2 = oprot.WriteMessageBegin(ctx, "PcapStart", thrift.REPLY, seqId); err2 != nil {
+    err = thrift.WrapTException(err2)
+  }
+  if err2 = result.Write(ctx, oprot); err == nil && err2 != nil {
+    err = thrift.WrapTException(err2)
+  }
+  if err2 = oprot.WriteMessageEnd(ctx); err == nil && err2 != nil {
+    err = thrift.WrapTException(err2)
+  }
+  if err2 = oprot.Flush(ctx); err == nil && err2 != nil {
+    err = thrift.WrapTException(err2)
+  }
+  if err != nil {
+    return
+  }
+  return true, err
+}
+
+type upfServiceProcessorPcapStop struct {
+  handler UpfService
+}
+
+func (p *upfServiceProcessorPcapStop) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+  args := UpfServicePcapStopArgs{}
+  var err2 error
+  if err2 = args.Read(ctx, iprot); err2 != nil {
+    iprot.ReadMessageEnd(ctx)
+    x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err2.Error())
+    oprot.WriteMessageBegin(ctx, "PcapStop", thrift.EXCEPTION, seqId)
+    x.Write(ctx, oprot)
+    oprot.WriteMessageEnd(ctx)
+    oprot.Flush(ctx)
+    return false, thrift.WrapTException(err2)
+  }
+  iprot.ReadMessageEnd(ctx)
+
+  tickerCancel := func() {}
+  // Start a goroutine to do server side connectivity check.
+  if thrift.ServerConnectivityCheckInterval > 0 {
+    var cancel context.CancelFunc
+    ctx, cancel = context.WithCancel(ctx)
+    defer cancel()
+    var tickerCtx context.Context
+    tickerCtx, tickerCancel = context.WithCancel(context.Background())
+    defer tickerCancel()
+    go func(ctx context.Context, cancel context.CancelFunc) {
+      ticker := time.NewTicker(thrift.ServerConnectivityCheckInterval)
+      defer ticker.Stop()
+      for {
+        select {
+        case <-ctx.Done():
+          return
+        case <-ticker.C:
+          if !iprot.Transport().IsOpen() {
+            cancel()
+            return
+          }
+        }
+      }
+    }(tickerCtx, cancel)
+  }
+
+  result := UpfServicePcapStopResult{}
+  if err2 = p.handler.PcapStop(ctx, args.Port); err2 != nil {
+    tickerCancel()
+    if err2 == thrift.ErrAbandonRequest {
+      return false, thrift.WrapTException(err2)
+    }
+    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing PcapStop: " + err2.Error())
+    oprot.WriteMessageBegin(ctx, "PcapStop", thrift.EXCEPTION, seqId)
+    x.Write(ctx, oprot)
+    oprot.WriteMessageEnd(ctx)
+    oprot.Flush(ctx)
+    return true, thrift.WrapTException(err2)
+  }
+  tickerCancel()
+  if err2 = oprot.WriteMessageBegin(ctx, "PcapStop", thrift.REPLY, seqId); err2 != nil {
     err = thrift.WrapTException(err2)
   }
   if err2 = result.Write(ctx, oprot); err == nil && err2 != nil {
@@ -1624,6 +1814,300 @@ func (p *UpfServiceClearStatsResult) String() string {
     return "<nil>"
   }
   return fmt.Sprintf("UpfServiceClearStatsResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Port
+type UpfServicePcapStartArgs struct {
+  Port int32 `thrift:"port,1,required" db:"port" json:"port"`
+}
+
+func NewUpfServicePcapStartArgs() *UpfServicePcapStartArgs {
+  return &UpfServicePcapStartArgs{}
+}
+
+
+func (p *UpfServicePcapStartArgs) GetPort() int32 {
+  return p.Port
+}
+func (p *UpfServicePcapStartArgs) Read(ctx context.Context, iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+  var issetPort bool = false;
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin(ctx)
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if fieldTypeId == thrift.I32 {
+        if err := p.ReadField1(ctx, iprot); err != nil {
+          return err
+        }
+        issetPort = true
+      } else {
+        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+          return err
+        }
+      }
+    default:
+      if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(ctx); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  if !issetPort{
+    return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Port is not set"));
+  }
+  return nil
+}
+
+func (p *UpfServicePcapStartArgs)  ReadField1(ctx context.Context, iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI32(ctx); err != nil {
+  return thrift.PrependError("error reading field 1: ", err)
+} else {
+  p.Port = v
+}
+  return nil
+}
+
+func (p *UpfServicePcapStartArgs) Write(ctx context.Context, oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin(ctx, "PcapStart_args"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(ctx, oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(ctx); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(ctx); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *UpfServicePcapStartArgs) writeField1(ctx context.Context, oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin(ctx, "port", thrift.I32, 1); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:port: ", p), err) }
+  if err := oprot.WriteI32(ctx, int32(p.Port)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.port (1) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:port: ", p), err) }
+  return err
+}
+
+func (p *UpfServicePcapStartArgs) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("UpfServicePcapStartArgs(%+v)", *p)
+}
+
+type UpfServicePcapStartResult struct {
+}
+
+func NewUpfServicePcapStartResult() *UpfServicePcapStartResult {
+  return &UpfServicePcapStartResult{}
+}
+
+func (p *UpfServicePcapStartResult) Read(ctx context.Context, iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin(ctx)
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+      return err
+    }
+    if err := iprot.ReadFieldEnd(ctx); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *UpfServicePcapStartResult) Write(ctx context.Context, oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin(ctx, "PcapStart_result"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+  }
+  if err := oprot.WriteFieldStop(ctx); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(ctx); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *UpfServicePcapStartResult) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("UpfServicePcapStartResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Port
+type UpfServicePcapStopArgs struct {
+  Port int32 `thrift:"port,1,required" db:"port" json:"port"`
+}
+
+func NewUpfServicePcapStopArgs() *UpfServicePcapStopArgs {
+  return &UpfServicePcapStopArgs{}
+}
+
+
+func (p *UpfServicePcapStopArgs) GetPort() int32 {
+  return p.Port
+}
+func (p *UpfServicePcapStopArgs) Read(ctx context.Context, iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+  var issetPort bool = false;
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin(ctx)
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if fieldTypeId == thrift.I32 {
+        if err := p.ReadField1(ctx, iprot); err != nil {
+          return err
+        }
+        issetPort = true
+      } else {
+        if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+          return err
+        }
+      }
+    default:
+      if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(ctx); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  if !issetPort{
+    return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("Required field Port is not set"));
+  }
+  return nil
+}
+
+func (p *UpfServicePcapStopArgs)  ReadField1(ctx context.Context, iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI32(ctx); err != nil {
+  return thrift.PrependError("error reading field 1: ", err)
+} else {
+  p.Port = v
+}
+  return nil
+}
+
+func (p *UpfServicePcapStopArgs) Write(ctx context.Context, oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin(ctx, "PcapStop_args"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(ctx, oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(ctx); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(ctx); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *UpfServicePcapStopArgs) writeField1(ctx context.Context, oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin(ctx, "port", thrift.I32, 1); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:port: ", p), err) }
+  if err := oprot.WriteI32(ctx, int32(p.Port)); err != nil {
+  return thrift.PrependError(fmt.Sprintf("%T.port (1) field write error: ", p), err) }
+  if err := oprot.WriteFieldEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:port: ", p), err) }
+  return err
+}
+
+func (p *UpfServicePcapStopArgs) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("UpfServicePcapStopArgs(%+v)", *p)
+}
+
+type UpfServicePcapStopResult struct {
+}
+
+func NewUpfServicePcapStopResult() *UpfServicePcapStopResult {
+  return &UpfServicePcapStopResult{}
+}
+
+func (p *UpfServicePcapStopResult) Read(ctx context.Context, iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin(ctx)
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    if err := iprot.Skip(ctx, fieldTypeId); err != nil {
+      return err
+    }
+    if err := iprot.ReadFieldEnd(ctx); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(ctx); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *UpfServicePcapStopResult) Write(ctx context.Context, oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin(ctx, "PcapStop_result"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+  }
+  if err := oprot.WriteFieldStop(ctx); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(ctx); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *UpfServicePcapStopResult) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("UpfServicePcapStopResult(%+v)", *p)
 }
 
 
