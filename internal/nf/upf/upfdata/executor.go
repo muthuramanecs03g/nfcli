@@ -233,7 +233,7 @@ func upfDataClose(cmd []string) {
 	closeClient()
 }
 
-// pcap --pid 1 --start|--stop
+// pcap --port 1 --start|--stop
 func upfDataPcap(cmd []string) {
 	l := len(cmd)
 	if l < 4 { // Minimum command length
@@ -255,7 +255,7 @@ func upfDataPcap(cmd []string) {
 			op = 1
 		case "--stop":
 			op = 2
-		case "--pid":
+		case "--port":
 			if l > next {
 				portIds = cmd[next]
 			}
